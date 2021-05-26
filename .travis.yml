@@ -15,6 +15,7 @@ jobs:
         - pytest --cov=./ --cov-report=xml
       after_script:
         - coverage xml
+        - coverage report
         - ./cc-test-reporter after-build -t coverage.py --exit-code ${TRAVIS_TEST_RESULT}
 
 
