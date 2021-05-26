@@ -10,9 +10,6 @@ MiniJSON is a codec for a compact binary representation of a subset of JSON.
 Usage
 -----
 
-As usual, please [RTFM](minijson/routines.pxd).
-Here's the [specification](specification.md) of MiniJSON.
-
 Refer to the [documentation](http://minijson.readthedocs.io/en/latest/?badge=latest)
 for use.
 
