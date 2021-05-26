@@ -136,13 +136,17 @@ cpdef tuple parse(bytes data, int starting_position):
         char sint8
         list e_list
         dict e_dict
-        bytes b_field_name
+        bytes b_field_name, byte_data
         str s_field_name
     try:
         if value_type & 0x80:
             string_length = value_type & 0x7F
             try:
-                return string_length+1, data[starting_position+1:starting_position+string_length+1].decode('utf-8')
+                byte_data = data[starting_position+1:starting_position+string_length+1]
+                if len(byte_data) != string_length:
+                    raise DecodingError('Too short a frame, expected %s bytes got %s' % (string_length,
+                                                                                         len(byte_data)))
+                return string_length+1, byte_data.decode('utf-8')
             except UnicodeDecodeError as e:
                 raise DecodingError('Invalid UTF-8') from e
         elif value_type & 0xF0 == 0x40:
@@ -163,6 +167,8 @@ cpdef tuple parse(bytes data, int starting_position):
         elif value_type == 0:
             string_length = data[starting_position+1]
             offset, b_field_name = parse_cstring(data, starting_position+1)
+            if len(b_field_name) != string_length:
+                raise DecodingError('Expected %s bytes, got %s' % (string_length, len(b_field_name)))
             try:
                 return offset+1, b_field_name.decode('utf-8')
             except UnicodeDecodeError as e:
@@ -209,10 +215,18 @@ cpdef tuple parse(bytes data, int starting_position):
             return offset+2, e_dict
         elif value_type == 13:
             string_length, = STRUCT_H.unpack(data[starting_position+1:starting_position+3])
-            return 3+string_length, data[starting_position+3:starting_position+string_length+3].decode('utf-8')
+            byte_data = data[starting_position+3:starting_position+string_length+3]
+            if len(byte_data) != string_length:
+                raise DecodingError('Too short a frame, expected %s bytes got %s' % (string_length,
+                                                                                     len(byte_data)))
+            return 3+string_length, byte_data.decode('utf-8')
         elif value_type == 14:
             string_length, = STRUCT_L.unpack(data[starting_position+1:starting_position+5])
-            return 5+string_length, data[starting_position+5:starting_position+string_length+5].decode('utf-8')
+            byte_data = data[starting_position+5:starting_position+string_length+5]
+            if len(byte_data) != string_length:
+                raise DecodingError('Too short a frame, expected %s bytes got %s' % (string_length,
+                                                                                     len(byte_data)))
+            return 5+string_length, byte_data.decode('utf-8')
         elif value_type == 15:
             elements, = STRUCT_H.unpack(data[starting_position+1:starting_position+3])
             offset, e_list = parse_list(data, elements, starting_position+3)
@@ -242,7 +256,7 @@ cpdef tuple parse(bytes data, int starting_position):
             offset, e_dict = parse_sdict(data, elements, starting_position+3)
             return offset+3, e_dict
         raise DecodingError('Unknown sequence type %s!' % (value_type, ))
-    except IndexError as e:
+    except (IndexError, struct.error) as e:
         raise DecodingError('String too short!') from e
 
 cpdef object loads(bytes data):

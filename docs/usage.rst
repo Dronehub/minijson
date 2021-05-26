@@ -59,4 +59,5 @@ Example:
 
     a = Test(3)
     b = dumps_object(a)
-    loads_object(b, Test)
+    c = loads_object(b, Test)
+    assert a.a == c.a

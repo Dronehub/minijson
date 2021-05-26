@@ -7,6 +7,12 @@ class TestMiniJSON(unittest.TestCase):
     def assertSameAfterDumpsAndLoads(self, c):
         self.assertEqual(loads(dumps(c)), c)
 
+    def test_malformed(self):
+        self.assertRaises(EncodingError, lambda: dumps(2+3j))
+        self.assertRaises(DecodingError, lambda: loads(b'\x00\x02a'))
+        self.assertRaises(DecodingError, lambda: loads(b'\x00\x02a'))
+        self.assertRaises(DecodingError, lambda: loads(b'\x09\x00'))
+
     def test_short_nonstring_key_dicts(self):
         a = {}
         for i in range(20):
