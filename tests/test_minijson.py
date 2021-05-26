@@ -23,9 +23,13 @@ class TestMiniJSON(unittest.TestCase):
         for i in range(300):
             a[i] = i
         self.assertSameAfterDumpsAndLoads(a)
-        for i in range(700000):
+        for i in range(70000):
             a[i] = i
         self.assertSameAfterDumpsAndLoads(a)
+
+    def test_invalid_name_dict(self):
+        self.assertRaises(DecodingError, lambda: loads(b'\x15\x01\x81\x01'))
+        self.assertRaises(DecodingError, lambda: loads(b'\x0B\x01\x01\xFF\x15'))
 
     def test_encode_double(self):
         switch_default_double()
@@ -75,16 +79,12 @@ class TestMiniJSON(unittest.TestCase):
             a[str(i)] = i*2
         self.assertSameAfterDumpsAndLoads(a)
         a = {}
-        for i in range(0xFFFFF):
+        for i in range(0x1FFFF):
             a[str(i)] = i*2
         self.assertSameAfterDumpsAndLoads(a)
-        a = []
-        for i in range(65535):
-            a.append(i)
+        a = list(range(0xFFFF))
         self.assertSameAfterDumpsAndLoads(a)
-        a = []
-        for i in range(0xFFFFFF):
-            a.append(i*2)
+        a = list(range(0x1FFFF))
         self.assertSameAfterDumpsAndLoads(a)
 
     def test_negatives(self):
