@@ -15,8 +15,10 @@ if 'DEBUG' in os.environ:
     build_kwargs.update(gdb_debug=True)
     directives.update(embedsignature=True,
                       profile=True,
-                      linetrace=True)
-    multi_kwargs['define_macros'] = [('CYTHON_TRACE', '1')]
+                      linetrace=True,
+                      binding=True)
+    multi_kwargs['define_macros'] = [('CYTHON_TRACE', '1'),
+                                     ('CYTHON_TRACE_NOGIL', '1')]
 
 
 setup(version='1.7',
