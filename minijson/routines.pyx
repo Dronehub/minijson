@@ -209,7 +209,7 @@ cpdef tuple parse(bytes data, int starting_position):
             return offset+2, e_dict
         elif value_type == 13:
             string_length, = STRUCT_H.unpack(data[starting_position+1:starting_position+3])
-            return 3+string_length, data[starting_position+2:starting_position+string_length+1].decode('utf-8')
+            return 3+string_length, data[starting_position+3:starting_position+string_length+3].decode('utf-8')
         elif value_type == 14:
             string_length, = STRUCT_L.unpack(data[starting_position+1:starting_position+5])
             return 5+string_length, data[starting_position+5:starting_position+string_length+5].decode('utf-8')
@@ -277,18 +277,20 @@ cpdef int dump(object data, cio: io.BytesIO) except -1:
             cio.write(bytearray([0x80 | length]))
             cio.write(data.encode('utf-8'))
             return 1+length
-        elif length < 255:
+        elif length <= 0xFF:
             cio.write(bytearray([0, length]))
             cio.write(data.encode('utf-8'))
             return 2+length
-        elif length < 65535:
+        elif length <= 0xFFFF:
             cio.write(b'\x0D')
             cio.write(STRUCT_H.pack(length))
             cio.write(data.encode('utf-8'))
-        elif length < 0xFFFFFFFF:
+            return 3+length
+        elif length <= 0xFFFFFFFF:
             cio.write(b'\x0E')
             cio.write(STRUCT_L.pack(length))
             cio.write(data.encode('utf-8'))
+            return 5+length
         else:
             raise EncodingError('String is too long!')
     elif isinstance(data, int):
@@ -375,20 +377,22 @@ cpdef int dump(object data, cio: io.BytesIO) except -1:
                 raise EncodingError('Keys have to be strings!') from e
             return length
         else:
-            if length < 16:
+            if length <= 0xF:
                 cio.write(bytearray([0b01100000 | length]))
                 offset = 1
-            elif length < 256:
+            elif length <= 0xFF:
                 cio.write(bytearray([20, length]))
                 offset = 2
-            elif length < 0xFFFF:
+            elif length <= 0xFFFF:
                 cio.write(b'\x15')
                 cio.write(STRUCT_H.pack(length))
                 offset = 3
-            else:
+            elif length <= 0xFFFFFFFF:
                 cio.write(b'\x13')
                 cio.write(STRUCT_L.pack(length))
                 offset = 5
+            else:
+                raise EncodingError('Too long of a string!')
 
             for key, value in data.items():
                 offset += dump(key, cio)

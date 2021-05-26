@@ -71,6 +71,12 @@ class TestMiniJSON(unittest.TestCase):
             a.append(i*2)
         self.assertSameAfterDumpsAndLoads(a)
 
+    def test_negatives(self):
+        self.assertSameAfterDumpsAndLoads(-1)
+        self.assertSameAfterDumpsAndLoads(-259)
+        self.assertSameAfterDumpsAndLoads(-0x7FFF)
+        self.assertSameAfterDumpsAndLoads(-0xFFFF)
+
     def test_dumps(self):
         v = {"name": "land", "operator_id": "dupa", "parameters":
             {"lat": 45.22999954223633, "lon": 54.79999923706055, "alt": 234}}
