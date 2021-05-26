@@ -3,3 +3,4 @@ here's only the changelog for the version in development
 
 # v1.7
 
+* I totally forgot about booleans!

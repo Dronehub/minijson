@@ -26,6 +26,10 @@ class TestMiniJSON(unittest.TestCase):
             a[i] = i
         self.assertSameAfterDumpsAndLoads(a)
 
+    def test_booleans(self):
+        self.assertSameAfterDumpsAndLoads({'test': True,
+                                           'test2': False})
+
     def test_string(self):
         a = 'test'
         b = 't'*128

@@ -61,3 +61,5 @@ Type Value consists of:
   and then follow that many pairs of Values (key: value)
 * If value is 21, then next data is an unsigned short,
   and then follow that many pairs of Values (key: value)
+* If value is 22, then it's True
+* If value is 23, then it's False

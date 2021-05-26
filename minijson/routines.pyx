@@ -255,7 +255,12 @@ cpdef tuple parse(bytes data, int starting_position):
             elements, = STRUCT_H.unpack(data[starting_position+1:starting_position+3])
             offset, e_dict = parse_sdict(data, elements, starting_position+3)
             return offset+3, e_dict
-        raise DecodingError('Unknown sequence type %s!' % (value_type, ))
+        elif value_type == 22:
+            return 1, True
+        elif value_type == 23:
+            return 1, False
+        else:
+            raise DecodingError('Unknown sequence type %s!' % (value_type, ))
     except (IndexError, struct.error) as e:
         raise DecodingError('String too short!') from e
 
@@ -284,6 +289,12 @@ cpdef int dump(object data, cio: io.BytesIO) except -1:
         int length
     if data is None:
         cio.write(b'\x08')
+        return 1
+    elif data is True:
+        cio.write(b'\x16')
+        return 1
+    elif data is False:
+        cio.write(b'\x17')
         return 1
     elif isinstance(data, str):
         length = len(data)
