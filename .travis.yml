@@ -3,21 +3,18 @@ cache: pip
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
-  - pwd
   - ./cc-test-reporter before-build
   - pip install -r requirements.txt
-  - pip install -U pytest-xdist pytest-cov pytest pytest-forked pluggy py mock
-  - python setup.py install
-  - rm -rf minijson
 jobs:
   include:
     - stage: test
     - stage: test
       python: "3.8"
       script:
-        - pytest -n 8 --cov=satella
+        - DEBUG=1 python setup.py test
       after_script:
         - coverage xml
-        - ./cc-test-reporter after-build -t coverage.py --exit-code $TRAVIS_TEST_RESULT
+        - ./cc-test-reporter after-build -t coverage.py --exit-code ${TRAVIS_TEST_RESULT}
+
 
 

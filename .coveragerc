@@ -1,0 +1,9 @@
+[run]
+branch=1
+source=
+  minijson
+omit=
+  tests/*
+  .eggs/*
+  setup.py
+plugins = Cython.Coverage
