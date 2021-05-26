@@ -5,6 +5,7 @@ before_script:
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
   - pip install -r requirements.txt
+  - pip install nose2 mock coverage nose2[coverage_plugin]
 jobs:
   include:
     - stage: test
