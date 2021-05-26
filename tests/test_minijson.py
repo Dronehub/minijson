@@ -65,6 +65,7 @@ class TestMiniJSON(unittest.TestCase):
     def test_loads_exception(self):
         b = b'\x1F'
         self.assertRaises(DecodingError, lambda: loads(b))
+        self.assertRaises(EncodingError, lambda: dumps({1: 2}))
 
     def test_loads(self):
         a = loads(b'\x0B\x03\x04name\x84land\x0Boperator_id\x84dupa\x0Aparameters\x0B\x03\x03lat\x09B4\xeb\x85\x03lon\x09B[33\x03alt\x09Cj\x00\x00')
