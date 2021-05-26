@@ -22,7 +22,7 @@ copyright = '2021 Dronehub Group sp. z o. o.'
 author = 'Piotr Maślanka'
 
 # The full version, including alpha/beta/rc tags
-release = '1.7'
+release = '2.0'
 
 
 # -- General configuration ---------------------------------------------------
