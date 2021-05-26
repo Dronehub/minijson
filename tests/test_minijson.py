@@ -4,63 +4,58 @@ from minijson import dumps, loads, dumps_object, loads_object, EncodingError, De
 
 class TestMiniJSON(unittest.TestCase):
 
+    def assertSameAfterDumpsAndLoads(self, c):
+        self.assertEqual(loads(dumps(c)), c)
+
     def test_string(self):
         a = 'test'
         b = 't'*128
         c = 't'*65535
         d = 't'*128342
-        self.assertEqual(loads(dumps(a)), a)
-        self.assertEqual(loads(dumps(b)), b)
-        self.assertEqual(loads(dumps(c)), c)
-        self.assertEqual(loads(dumps(d)), d)
+        self.assertSameAfterDumpsAndLoads(a)
+        self.assertSameAfterDumpsAndLoads(b)
+        self.assertSameAfterDumpsAndLoads(c)
+        self.assertSameAfterDumpsAndLoads(d)
 
     def test_lists(self):
-        a = [1, 2, 3]
-        b = dumps(a)
-        c = loads(b)
-        self.assertEqual(a, c)
+        a = [None]*4
+        self.assertSameAfterDumpsAndLoads(a)
 
         a = [None]*256
-        self.assertEqual(loads(dumps(a)), a)
+        self.assertSameAfterDumpsAndLoads(a)
 
     def test_long_lists(self):
         a = [None]*17
-        b = dumps(a)
-        c = loads(b)
-        self.assertEqual(a, c)
+        self.assertSameAfterDumpsAndLoads(a)
 
     def test_long_dicts(self):
         a = {}
         for i in range(17):
             a[str(i)] = i
-        b = dumps(a)
-        c = loads(b)
-        self.assertEqual(a, c)
+        self.assertSameAfterDumpsAndLoads(a)
 
     def test_long_dicts_and_lists(self):
         a = {}
         for i in range(65535):
             a[str(i)] = i*2
-        self.assertEqual(loads(dumps(a)), a)
+        self.assertSameAfterDumpsAndLoads(a)
         a = {}
         for i in range(0xFFFFF):
             a[str(i)] = i*2
-        self.assertEqual(loads(dumps(a)), a)
+        self.assertSameAfterDumpsAndLoads(a)
         a = []
         for i in range(65535):
             a.append(i)
-        self.assertEqual(loads(dumps(a)), a)
+        self.assertSameAfterDumpsAndLoads(a)
         a = []
         for i in range(0xFFFFFF):
             a.append(i*2)
-        self.assertEqual(loads(dumps(a)), a)
+        self.assertSameAfterDumpsAndLoads(a)
 
     def test_dumps(self):
         v = {"name": "land", "operator_id": "dupa", "parameters":
             {"lat": 45.22999954223633, "lon": 54.79999923706055, "alt": 234}}
-        b = dumps(v)
-        c = loads(b)
-        self.assertEqual(v, c)
+        self.assertSameAfterDumpsAndLoads(v)
 
     def test_loads_exception(self):
         b = b'\x1F'
