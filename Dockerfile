@@ -1,19 +1,13 @@
 FROM smokserwis/build:python3
 
-RUN pip install snakehouse Cython satella pytest
+RUN pip install snakehouse Cython satella pytest coverage pytest-cov
 
 ENV DEBUG=1
 
 WORKDIR /tmp/compile
-ADD minijson /tmp/compile/minijson
-ADD setup.py /tmp/compile/setup.py
-ADD README.md /tmp/compile/README.md
-ADD setup.cfg /tmp/compile/setup.cfg
+ADD . /tmp/compile/
 
 RUN python setup.py install
+RUN rm -rf minijson
 
-WORKDIR /tmp
-
-ADD tests /tmp/tests
-
-CMD ["pytest"]
+CMD ["pytest", "--cov=./", "--cov-report=xml"]
