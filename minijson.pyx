@@ -2,7 +2,22 @@ import typing as tp
 import io
 import struct
 
-from minijson.exceptions import DecodingError, EncodingError
+
+class MiniJSONError(ValueError):
+    """
+    Base class for MiniJSON errors.
+
+    Note that it inherits from :code:`ValueError`.
+    """
+
+
+class EncodingError(MiniJSONError):
+    """Error during encoding"""
+
+
+class DecodingError(MiniJSONError):
+    """Error during decoding"""
+
 
 STRUCT_f = struct.Struct('>f')
 STRUCT_d = struct.Struct('>d')

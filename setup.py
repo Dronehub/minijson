@@ -1,34 +1,25 @@
 import os
-from setuptools import find_packages
 from distutils.core import setup
-from snakehouse import Multibuild, build, monkey_patch_parallel_compilation, find_pyx
+from distutils.extension import Extension
 
-monkey_patch_parallel_compilation()
+from Cython.Build import cythonize
+from Cython.Compiler.Options import get_directive_defaults
 
-build_kwargs = {}
-directives = {'language_level': '3'}
-dont_snakehouse = False
-multi_kwargs = {}
+
+directive_defaults = get_directive_defaults()
+directive_defaults['language_level'] = '3'
+macros = []
 if 'DEBUG' in os.environ:
     print('Enabling debug mode')
-    dont_snakehouse = True
-    build_kwargs.update(gdb_debug=True)
-    directives.update(embedsignature=True,
-                      profile=True,
-                      linetrace=True,
-                      binding=True)
-    multi_kwargs['define_macros'] = [('CYTHON_TRACE', '1'),
-                                     ('CYTHON_TRACE_NOGIL', '1')]
+    directive_defaults['linetrace'] = True
+    directive_defaults['binding'] = True
+    macros = [('CYTHON_TRACE', '1')]
 
-    import Cython.Compiler.Options
-    Cython.Compiler.Options.annotate = True
-
+extensions = [Extension("minijson", ["minijson.pyx"],
+    define_macros=macros),
+]
 
 setup(version='1.7',
-      packages=find_packages(include=['minijson', 'minijson.*']),
-      ext_modules=build([Multibuild('minijson', find_pyx('minijson'),
-                                    dont_snakehouse=dont_snakehouse,
-                                    **multi_kwargs), ],
-                        compiler_directives=directives, **build_kwargs),
+      ext_modules=cythonize(extensions),
       python_requires='!=2.7.*,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*,!=3.7.*',
       )

@@ -19,8 +19,4 @@ for use.
 
 If there are no binary wheels precompiled for this platform, you will need to compile it yourself.
 
-In order to do that you must have the following packages installed:
-
-* snakehouse
-* satella
-* Cython
+In order to do that you must have `Cython` installed.

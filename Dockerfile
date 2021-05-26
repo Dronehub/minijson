@@ -8,6 +8,5 @@ WORKDIR /tmp/compile
 ADD . /tmp/compile/
 
 RUN python setup.py install
-RUN rm -rf minijson
 
 CMD ["pytest", "--cov=./", "--cov-report=xml"]
