@@ -3,6 +3,9 @@ Usage
 
 MiniJSON implements the same interface as json or yaml, namely:
 
+.. warning:: Cycles are not automatically detected. They might make the application hang
+    or cause an MemoryError.
+
 .. autofunction:: minijson.loads
 
 .. autofunction:: minijson.dumps
