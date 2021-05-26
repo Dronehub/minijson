@@ -4,5 +4,6 @@ here's only the changelog for the version in development
 # v2.0
 
 * fixed a bug with serializing uint32a
+* added support for arbitrarily large integers
 * major refactor
     * backwards compatible 100%

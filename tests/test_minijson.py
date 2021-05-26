@@ -97,12 +97,10 @@ class TestMiniJSON(unittest.TestCase):
         self.assertSameAfterDumpsAndLoads(-0x7FFF)
         self.assertSameAfterDumpsAndLoads(-0xFFFF)
         self.assertSameAfterDumpsAndLoads(0x1FFFF)
-        b = dumps(0xFFFFFFFF)
-        print('Serialized to %s' % (b, ))
-        c = loads(b)
-        self.assertEqual(0xFFFFFFFF, c)
+        self.assertSameAfterDumpsAndLoads(0xFFFFFFFF)
         self.assertSameAfterDumpsAndLoads(0x1FFFFFF)
-        self.assertRaises(EncodingError, lambda: dumps(0xFFFFFFFFF))
+        self.assertSameAfterDumpsAndLoads(0xFFFFFFFFF)
+        self.assertSameAfterDumpsAndLoads(0xFFFFFFFFFFFFF)
 
     def test_dumps(self):
         v = {"name": "land", "operator_id": "dupa", "parameters":

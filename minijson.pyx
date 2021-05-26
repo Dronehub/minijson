@@ -274,6 +274,10 @@ cpdef tuple parse(bytes data, int starting_position):
             return 1, True
         elif value_type == 23:
             return 1, False
+        elif value_type == 24:
+            length = data[starting_position+1]
+            byte_data = data[starting_position+2:starting_position+2+length]
+            return length+2, int.from_bytes(byte_data, 'big', signed=True)
         else:
             raise DecodingError('Unknown sequence type %s!' % (value_type, ))
     except (IndexError, struct.error) as e:
@@ -302,6 +306,7 @@ cpdef int dump(object data, cio: io.BytesIO) except -1:
     cdef:
         str field_name
         int length
+        bytes b_data
     if data is None:
         cio.write(b'\x08')
         return 1
@@ -364,7 +369,15 @@ cpdef int dump(object data, cio: io.BytesIO) except -1:
             cio.write(STRUCT_L.pack(data))
             return 5
         else:
-            raise EncodingError('Too large integer %s' % (data, ))
+            length = 5
+            while True:
+                try:
+                    b_data = data.to_bytes(length, 'big', signed=True)
+                    break
+                except OverflowError:
+                    length += 1
+            cio.write(bytearray([0x18, length]))
+            cio.write(b_data)
     elif isinstance(data, float):
         if float_encoding_mode == 0:
             cio.write(b'\x09')

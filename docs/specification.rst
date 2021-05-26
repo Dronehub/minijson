@@ -63,3 +63,5 @@ Type Value consists of:
   and then follow that many pairs of Values (key: value)
 * If value is 22, then it's True
 * If value is 23, then it's False
+* If value is 24, then next what comes is count of bytes, and then bytes follow. This is to be
+    interpreted as a signed integer
