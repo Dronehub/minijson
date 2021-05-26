@@ -11,6 +11,7 @@ Welcome to MiniJSON's documentation!
    :caption: Contents:
 
    usage
+   specification
 
 Indices and tables
 ==================
