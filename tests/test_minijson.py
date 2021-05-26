@@ -13,6 +13,21 @@ class TestMiniJSON(unittest.TestCase):
         a = [None]*256
         self.assertRaises(EncodingError, lambda: dumps(a))
 
+    def test_long_lists(self):
+        a = [None]*17
+        b = dumps(a)
+        print('Encoded %s' % (b, ))
+        c = loads(b)
+        self.assertEqual(a, c)
+
+    def test_long_dicts(self):
+        a = {}
+        for i in range(17):
+            a[str(i)] = i
+        b = dumps(a)
+        c = loads(b)
+        self.assertEqual(a, c)
+
     def test_exceptions(self):
         a = {}
         for i in range(65535):

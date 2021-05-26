@@ -2,6 +2,8 @@ FROM smokserwis/build:python3
 
 RUN pip install snakehouse Cython satella pytest
 
+ENV DEBUG=1
+
 WORKDIR /tmp/compile
 ADD minijson /tmp/compile/minijson
 ADD setup.py /tmp/compile/setup.py
