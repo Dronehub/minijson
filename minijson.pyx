@@ -475,7 +475,7 @@ cpdef object loads_object(bytes data, object obj_class):
     """
     Load a dict from a bytestream, unserialize it and use it as a kwargs to instantiate
     an object of given class
-    
+
     :param data: data to unserialized 
     :param obj_class: class to instantiate
     :return: instance of obj_class

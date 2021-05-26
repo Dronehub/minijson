@@ -41,14 +41,10 @@ class TestMiniJSON(unittest.TestCase):
                                            'test2': False})
 
     def test_string(self):
-        a = 'test'
-        b = 't'*128
-        c = 't'*65535
-        d = 't'*128342
-        self.assertSameAfterDumpsAndLoads(a)
-        self.assertSameAfterDumpsAndLoads(b)
-        self.assertSameAfterDumpsAndLoads(c)
-        self.assertSameAfterDumpsAndLoads(d)
+        self.assertSameAfterDumpsAndLoads('test')
+        self.assertSameAfterDumpsAndLoads('t'*128)
+        self.assertSameAfterDumpsAndLoads('t'*65535)
+        self.assertSameAfterDumpsAndLoads('t'*65540)
 
     def test_lists(self):
         a = [None]*4
@@ -121,3 +117,4 @@ class TestMiniJSON(unittest.TestCase):
         c = loads_object(b, Test)
         self.assertEqual(a.a, c.a)
         self.assertIsInstance(c, Test)
+        self.assertRaises(DecodingError, lambda: loads_object(b'\x07\x00', Test))
