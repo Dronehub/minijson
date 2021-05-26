@@ -15,4 +15,4 @@ exclude_paths:
   - tests/**
 ratings:
   paths:
-    - minijson/**
+    - minijson.pyx
