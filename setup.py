@@ -10,6 +10,7 @@ directives = {'language_level': '3'}
 dont_snakehouse = False
 multi_kwargs = {}
 if 'DEBUG' in os.environ:
+    print('Enabling debug mode')
     dont_snakehouse = True
     build_kwargs.update(gdb_debug=True)
     directives['embedsignature'] = True
