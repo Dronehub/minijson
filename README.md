@@ -1,5 +1,8 @@
 MiniJSON
 ========
+[![Documentation Status](https://readthedocs.org/projects/minijson/badge/?version=latest)](http://minijson.readthedocs.io/en/latest/?badge=latest)
+
+MiniJSON is a codec for a compact binary representation of a subset of JSON.
 
 Usage
 -----
