@@ -20,6 +20,6 @@ extensions = [Extension("minijson", ["minijson.pyx"],
     define_macros=macros),
 ]
 
-setup(version='1.7',
+setup(version='2.0rc1',
       ext_modules=cythonize(extensions),
       )
