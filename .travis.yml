@@ -6,16 +6,15 @@ before_script:
   - ./cc-test-reporter before-build
   - pip install -r requirements.txt
   - pip install pytest mock coverage cython[coverage] pytest-cov
-  - DEBUG=1 python setup.py install
+  - DEBUG=1 python setup.py build_ext --inplace --force --define CYTHON_TRACE
   - rm -rf minijson
 jobs:
   include:
     - stage: test
       python: "3.8"
       script:
-        - py.test --cov
+        - pytest --cov=./ --cov-report=xml
       after_script:
-        - coverage xml
         - ./cc-test-reporter after-build -t coverage.py --exit-code ${TRAVIS_TEST_RESULT}
 
 
