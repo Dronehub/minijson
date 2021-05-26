@@ -26,7 +26,6 @@ class TestMiniJSON(unittest.TestCase):
     def test_long_lists(self):
         a = [None]*17
         b = dumps(a)
-        print('Encoded %s' % (b, ))
         c = loads(b)
         self.assertEqual(a, c)
 
@@ -52,7 +51,7 @@ class TestMiniJSON(unittest.TestCase):
             a.append(i)
         self.assertEqual(loads(dumps(a)), a)
         a = []
-        for i in range(65530):
+        for i in range(0xFFFFFF):
             a.append(i*2)
         self.assertEqual(loads(dumps(a)), a)
 
