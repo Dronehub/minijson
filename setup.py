@@ -1,9 +1,9 @@
 import os
-from distutils.core import setup
 from distutils.extension import Extension
 
 from Cython.Build import cythonize
 from Cython.Compiler.Options import get_directive_defaults
+from distutils.core import setup
 
 directive_defaults = get_directive_defaults()
 directive_defaults['language_level'] = '3'

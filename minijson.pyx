@@ -351,14 +351,14 @@ cpdef int dump(object data, cio: io.BytesIO) except -1:
             cio.write(b'\x05')
             cio.write(STRUCT_H.pack(data))
             return 3
-        elif -2147483648 <= data <= 2147483647:     # signed int, type 1
-            cio.write(b'\x01')
-            cio.write(STRUCT_l.pack(data))
-            return 5
         elif 0 <= data <= 0xFFFFFF:         # unsigned 3byte, type 12
             cio.write(b'\x0C')
             cio.write(STRUCT_L.pack(data)[1:])
             return 4
+        elif -2147483648 <= data <= 2147483647:     # signed int, type 1
+            cio.write(b'\x01')
+            cio.write(STRUCT_l.pack(data))
+            return 5
         elif 0 <= data <= 0xFFFFFFFF:       # unsigned int, type 4
             cio.write(b'\x04')
             cio.write(STRUCT_L.pack(data))
