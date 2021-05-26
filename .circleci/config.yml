@@ -39,6 +39,6 @@ jobs:
           name: Install the software
           # This assumes pytest is installed via the install-package step above
           command: DEBUG=1 python setup.py install && rm -rf minijson
-      - test:
+      - run:
           name: Test the software
           command: pytest
