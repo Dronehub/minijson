@@ -7,6 +7,19 @@ class TestMiniJSON(unittest.TestCase):
     def assertSameAfterDumpsAndLoads(self, c):
         self.assertEqual(loads(dumps(c)), c)
 
+    def test_short_nonstring_key_dicts(self):
+        a = {}
+        for i in range(20):
+            a[i] = i
+        self.assertSameAfterDumpsAndLoads(a)
+        a = {}
+        for i in range(300):
+            a[i] = i
+        self.assertSameAfterDumpsAndLoads(a)
+        for i in range(700000):
+            a[i] = i
+        self.assertSameAfterDumpsAndLoads(a)
+
     def test_string(self):
         a = 'test'
         b = 't'*128

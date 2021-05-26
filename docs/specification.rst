@@ -19,9 +19,11 @@ with len of (value & 0x7F)
 * If value's two highest bits are 0100 or 0101, then four lowest bits encode the number of elements,
   and the four highest bits encode type of the object:
   * 0100 - a list
-  * 0101 - an object
-  Standard representation for an object or list follows,
-  sans the element count.
+  * 0101 - an object whose keys are all strings
+  * 0110 - an object whose keys are not all strings (see value of 19 and 20 to know how it's
+    represented).
+  * Standard representation for a non-key-string object (value 19), string key object (value 11) or list (value 7) follows,
+    sans the element count.
 * If value is zero, then next character is the length of the string followed by the string
 * If value is 1, then next data is signed int
 * If value is 2, then next data is signed short
@@ -51,7 +53,11 @@ with len of (value & 0x7F)
   and then a list follows of that many elements
 * If value is 17, then next data is a unsigned short,
   and then an object follows of that many elements
-* If value is 18, then next data is a unsigned int,
+* If value is 18, then next data is an unsigned int,
   and then an object follows of that many elements
-* If value is 19, then next data is a unsigned int,
+* If value is 19, then next data is an unsigned int,
+    and then follow that many pairs of Values (key: value)
+* If value is 20, then next data is an unsigned char,
+    and then follow that many pairs of Values (key: value)
+* If value is 21, then next data is an unsigned short,
     and then follow that many pairs of Values (key: value)

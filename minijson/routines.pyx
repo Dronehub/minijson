@@ -155,6 +155,11 @@ cpdef tuple parse(bytes data, int starting_position):
             elements = value_type & 0xF
             offset, e_dict = parse_dict(data, elements, starting_position+1)
             return offset+1, e_dict
+        elif value_type & 0xF0 == 0x60:
+            e_dict = {}
+            elements = value_type & 0xF
+            offset, e_dict = parse_sdict(data, elements, starting_position+1)
+            return offset+1, e_dict
         elif value_type == 0:
             string_length = data[starting_position+1]
             offset, b_field_name = parse_cstring(data, starting_position+1)
@@ -228,6 +233,14 @@ cpdef tuple parse(bytes data, int starting_position):
             elements, = STRUCT_L.unpack(data[starting_position+1:starting_position+5])
             offset, e_dict = parse_sdict(data, elements, starting_position+5)
             return offset+5, e_dict
+        elif value_type == 20:
+            elements = data[starting_position+1]
+            offset, e_dict = parse_sdict(data, elements, starting_position+2)
+            return offset+2, e_dict
+        elif value_type == 21:
+            elements, = STRUCT_H.unpack(data[starting_position+1:starting_position+3])
+            offset, e_dict = parse_sdict(data, elements, starting_position+3)
+            return offset+3, e_dict
         raise DecodingError('Unknown sequence type %s!' % (value_type, ))
     except IndexError as e:
         raise DecodingError('String too short!') from e
@@ -362,9 +375,21 @@ cpdef int dump(object data, cio: io.BytesIO) except -1:
                 raise EncodingError('Keys have to be strings!') from e
             return length
         else:
-            cio.write(b'\x13')
-            cio.write(STRUCT_L.pack(length))
-            offset = 5
+            if length < 16:
+                cio.write(bytearray([0b01100000 | length]))
+                offset = 1
+            elif length < 256:
+                cio.write(bytearray([20, length]))
+                offset = 2
+            elif length < 0xFFFF:
+                cio.write(b'\x15')
+                cio.write(STRUCT_H.pack(length))
+                offset = 3
+            else:
+                cio.write(b'\x13')
+                cio.write(STRUCT_L.pack(length))
+                offset = 5
+
             for key, value in data.items():
                 offset += dump(key, cio)
                 offset += dump(value, cio)

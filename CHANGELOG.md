@@ -3,4 +3,5 @@ here's only the changelog for the version in development
 
 # v1.4
 
-* _TBA_
+* improved encoding of small non-all-keys-are-strings dictionaries
+
