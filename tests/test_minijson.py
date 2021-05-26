@@ -5,15 +5,18 @@ from minijson import dumps, loads, dumps_object, loads_object, EncodingError, De
 
 class TestMiniJSON(unittest.TestCase):
 
+    def assertLoadingIsDecodingError(self, b: bytes):
+        self.assertRaises(DecodingError, lambda: loads(b))
+
     def assertSameAfterDumpsAndLoads(self, c):
         self.assertEqual(loads(dumps(c)), c)
 
     def test_malformed(self):
         self.assertRaises(EncodingError, lambda: dumps(2+3j))
-        self.assertRaises(DecodingError, lambda: loads(b'\x00\x02a'))
-        self.assertRaises(DecodingError, lambda: loads(b'\x00\x02a'))
-        self.assertRaises(DecodingError, lambda: loads(b'\x09\x00'))
-        self.assertRaises(DecodingError, lambda: loads(b'\x82\x00'))
+        self.assertLoadingIsDecodingError(b'\x00\x02a')
+        self.assertLoadingIsDecodingError(b'\x00\x02a')
+        self.assertLoadingIsDecodingError(b'\x09\x00')
+        self.assertLoadingIsDecodingError(b'\x82\x00')
 
     def test_short_nonstring_key_dicts(self):
         a = {i: i for i in range(20)}
@@ -24,10 +27,10 @@ class TestMiniJSON(unittest.TestCase):
         self.assertSameAfterDumpsAndLoads(a)
 
     def test_invalid_name_dict(self):
-        self.assertRaises(DecodingError, lambda: loads(b'\x15\x01\x81\x01'))
-        self.assertRaises(DecodingError, lambda: loads(b'\x0B\x01\x01\xFF\x15'))
-        self.assertRaises(DecodingError, lambda: loads(b'\x0D\x01\x00\x00'))
-        self.assertRaises(DecodingError, lambda: loads(b'\x0E\x00\x00\x01\x00\x00'))
+        self.assertLoadingIsDecodingError(b'\x15\x01\x81\x01')
+        self.assertLoadingIsDecodingError(b'\x0B\x01\x01\xFF\x15')
+        self.assertLoadingIsDecodingError(b'\x0D\x01\x00\x00')
+        self.assertLoadingIsDecodingError(b'\x0E\x00\x00\x01\x00\x00')
 
     def test_encode_double(self):
         switch_default_double()
@@ -66,19 +69,13 @@ class TestMiniJSON(unittest.TestCase):
         self.assertSameAfterDumpsAndLoads(a)
 
     def test_long_dicts_and_lists(self):
-        a = {str(i): i*2 for i in range(65535)}
-        self.assertSameAfterDumpsAndLoads(a)
-        a = {str(i): i*2 for i in range(0x1FFFFF)}
-        self.assertSameAfterDumpsAndLoads(a)
-        a = list(range(0xFFFF))
-        self.assertSameAfterDumpsAndLoads(a)
-        a = list(range(0x1FFFF))
-        self.assertSameAfterDumpsAndLoads(a)
+        self.assertSameAfterDumpsAndLoads({str(i): i*2 for i in range(65535)})
+        self.assertSameAfterDumpsAndLoads({str(i): i*2 for i in range(0x1FFFFF)})
+        self.assertSameAfterDumpsAndLoads(list(range(0xFFFF)))
+        self.assertSameAfterDumpsAndLoads(list(range(0x1FFFF)))
 
     def test_weird_dict(self):
-        key = 'a'*300
-        a = {key: 2}
-        self.assertSameAfterDumpsAndLoads(a)
+        self.assertSameAfterDumpsAndLoads({'a'*300: 2})
 
     def test_negatives(self):
         self.assertSameAfterDumpsAndLoads(-1)
@@ -92,15 +89,15 @@ class TestMiniJSON(unittest.TestCase):
         self.assertSameAfterDumpsAndLoads(0xFFFFFFFFFFFFF)
 
     def test_dumps(self):
-        v = {"name": "land", "operator_id": "dupa", "parameters":
-            {"lat": 45.22999954223633, "lon": 54.79999923706055, "alt": 234}}
-        self.assertSameAfterDumpsAndLoads(v)
+        self.assertSameAfterDumpsAndLoads({"name": "land", "operator_id": "dupa", "parameters":
+            {"lat": 45.22999954223633, "lon": 54.79999923706055, "alt": 234}})
 
     def test_loads_exception(self):
-        self.assertRaises(DecodingError, lambda: loads(b'\x1F'))
-        self.assertRaises(DecodingError, lambda: loads(b'\x00\x01'))
-        self.assertRaises(DecodingError, lambda: loads(b'\x00\x01\xFF'))
-        self.assertRaises(DecodingError, lambda: loads(b'\x81\xFF'))
+        self.assertLoadingIsDecodingError(b'')
+        self.assertLoadingIsDecodingError(b'\x1F')
+        self.assertLoadingIsDecodingError(b'\x00\x01')
+        self.assertLoadingIsDecodingError(b'\x00\x01\xFF')
+        self.assertLoadingIsDecodingError(b'\x81\xFF')
 
     def test_loads(self):
         a = loads(b'\x0B\x03\x04name\x84land\x0Boperator_id\x84dupa\x0Aparameters\x0B\x03\x03lat\x09B4\xeb\x85\x03lon\x09B[33\x03alt\x09Cj\x00\x00')

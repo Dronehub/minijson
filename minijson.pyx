@@ -141,7 +141,7 @@ cpdef tuple parse(bytes data, int starting_position):
     :raises DecodingError: invalid stream
     """
     cdef:
-        int value_type = data[starting_position]
+        int value_type
         int string_length, elements, i, offset, length
         unsigned int uint32
         int sint32
@@ -154,6 +154,7 @@ cpdef tuple parse(bytes data, int starting_position):
         bytes b_field_name, byte_data
         str s_field_name
     try:
+        value_type = data[starting_position]
         if value_type & 0x80:
             string_length = value_type & 0x7F
             try:
