@@ -4,9 +4,7 @@ MiniJSON specification
 MiniJSON is a binary encoding for a subset of JSON that:
 
 * has no keys longer than 255 bytes UTF-8
-* has no string values longer than 255 bytes UTF-8
-* has no lists longer than 255 elements
-* has no dicts longer than 255 elements
+* all keys are string
 
 MiniJSON is bigger endian.
 
@@ -40,3 +38,16 @@ with len of (value & 0x7F)
     followed by field name in UTF-8, and then goes the Value
     of the element
 * If value is 12, then next data is unsigned int24
+* If value is 13, then next data is an unsigned short representing the count
+    of characters, and then these characters follow and are
+    interpreted as a UTF-8 string
+* If value is 14, then next data is an unsigned int representing the count
+    of characters, and then these characters follow and are
+* If value is 15, then next data is a unsigned short,
+  and then a list follows of that many elements
+* If value is 16, then next data is a unsigned int,
+  and then a list follows of that many elements
+* If value is 17, then next data is a unsigned short,
+  and then an object follows of that many elements
+* If value is 18, then next data is a unsigned int,
+  and then an object follows of that many elements

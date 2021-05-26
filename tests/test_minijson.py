@@ -4,6 +4,16 @@ from minijson import dumps, loads, dumps_object, loads_object, EncodingError, De
 
 class TestMiniJSON(unittest.TestCase):
 
+    def test_string(self):
+        a = 'test'
+        b = 't'*128
+        c = 't'*65535
+        d = 't'*128342
+        self.assertEqual(loads(dumps(a)), a)
+        self.assertEqual(loads(dumps(b)), b)
+        self.assertEqual(loads(dumps(c)), c)
+        self.assertEqual(loads(dumps(d)), d)
+
     def test_lists(self):
         a = [1, 2, 3]
         b = dumps(a)
@@ -11,7 +21,7 @@ class TestMiniJSON(unittest.TestCase):
         self.assertEqual(a, c)
 
         a = [None]*256
-        self.assertRaises(EncodingError, lambda: dumps(a))
+        self.assertEqual(loads(dumps(a)), a)
 
     def test_long_lists(self):
         a = [None]*17
@@ -28,15 +38,23 @@ class TestMiniJSON(unittest.TestCase):
         c = loads(b)
         self.assertEqual(a, c)
 
-    def test_exceptions(self):
+    def test_long_dicts_and_lists(self):
         a = {}
         for i in range(65535):
-            a[i] = i*2
-        self.assertRaises(EncodingError, lambda: dumps(a))
+            a[str(i)] = i*2
+        self.assertEqual(loads(dumps(a)), a)
+        a = {}
+        for i in range(0xFFFFF):
+            a[str(i)] = i*2
+        self.assertEqual(loads(dumps(a)), a)
         a = []
         for i in range(65535):
             a.append(i)
-        self.assertRaises(EncodingError, lambda: dumps(a))
+        self.assertEqual(loads(dumps(a)), a)
+        a = []
+        for i in range(65530):
+            a.append(i*2)
+        self.assertEqual(loads(dumps(a)), a)
 
     def test_dumps(self):
         v = {"name": "land", "operator_id": "dupa", "parameters":
@@ -46,7 +64,7 @@ class TestMiniJSON(unittest.TestCase):
         self.assertEqual(v, c)
 
     def test_loads_exception(self):
-        b = b'\x1A'
+        b = b'\x1F'
         self.assertRaises(DecodingError, lambda: loads(b))
 
     def test_loads(self):

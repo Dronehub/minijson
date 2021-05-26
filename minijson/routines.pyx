@@ -170,6 +170,28 @@ cpdef tuple parse(bytes data, int starting_position):
             e_dict = {}
             offset, e_dict = parse_dict(data, elements, starting_position+2)
             return offset+2, e_dict
+        elif value_type == 13:
+            string_length, = STRUCT_H.unpack(data[starting_position+1:starting_position+3])
+            return 3+string_length, data[starting_position+2:starting_position+string_length+1].decode('utf-8')
+        elif value_type == 14:
+            string_length, = STRUCT_L.unpack(data[starting_position+1:starting_position+5])
+            return 5+string_length, data[starting_position+5:starting_position+string_length+5].decode('utf-8')
+        elif value_type == 15:
+            elements, = STRUCT_H.unpack(data[starting_position+1:starting_position+3])
+            offset, e_list = parse_list(data, elements, starting_position+3)
+            return 3+offset, e_list
+        elif value_type == 16:
+            elements, = STRUCT_L.unpack(data[starting_position+1:starting_position+5])
+            offset, e_list = parse_list(data, elements, starting_position+5)
+            return 5+offset, e_list
+        elif value_type == 17:
+            elements, = STRUCT_H.unpack(data[starting_position+1:starting_position+3])
+            offset, e_dict = parse_dict(data, elements, starting_position+3)
+            return offset+3, e_dict
+        elif value_type == 18:
+            elements, = STRUCT_L.unpack(data[starting_position+1:starting_position+5])
+            offset, e_dict = parse_dict(data, elements, starting_position+5)
+            return offset+5, e_dict
         raise DecodingError('Unknown sequence type %s!' % (value_type, ))
     except IndexError as e:
         raise DecodingError('String too short!') from e
@@ -202,16 +224,24 @@ cpdef int dump(object data, cio: io.BytesIO) except -1:
         return 1
     elif isinstance(data, str):
         length = len(data)
-        if length > 255:
-            raise EncodingError('Cannot encode string longer than 255 characters')
         if length < 128:
             cio.write(bytearray([0x80 | length]))
             cio.write(data.encode('utf-8'))
             return 1+length
-        else:
+        elif length < 255:
             cio.write(bytearray([0, length]))
             cio.write(data.encode('utf-8'))
             return 2+length
+        elif length < 65535:
+            cio.write(b'\x0D')
+            cio.write(STRUCT_H.pack(length))
+            cio.write(data.encode('utf-8'))
+        elif length < 0xFFFFFFFF:
+            cio.write(b'\x0E')
+            cio.write(STRUCT_L.pack(length))
+            cio.write(data.encode('utf-8'))
+        else:
+            raise EncodingError('String is too long!')
     elif isinstance(data, int):
         if -128 <= data <= 127: # signed char, type 3
             cio.write(b'\x03')
@@ -253,31 +283,46 @@ cpdef int dump(object data, cio: io.BytesIO) except -1:
             return 9
     elif isinstance(data, (tuple, list)):
         length = len(data)
-        if length > 255:
-            raise EncodingError('Too long of a list, maximum list length is 255')
         if length < 16:
             cio.write(bytearray([0b01000000 | length]))
             length = 1
-        else:
+        elif length < 256:
             cio.write(bytearray([7, length]))
             length = 2
+        elif length < 65536:
+            cio.write(b'\x0F')
+            cio.write(STRUCT_H.pack(length))
+            length = 3
+        elif length <= 0xFFFFFFFF:
+            cio.write(b'\x10')
+            cio.write(STRUCT_L.pack(length))
+            length = 5
         for elem in data:
             length += dump(elem, cio)
         return length
     elif isinstance(data, dict):
         length = len(data)
-        if length > 255:
-            raise EncodingError('Too long of a dict, maximum dict length is 255')
         if length < 16:
             cio.write(bytearray([0b01010000 | length]))
             length = 1
-        else:
+        elif length < 256:
             cio.write(bytearray([11, len(data)]))
             length = 2
-        for field_name, elem in data.items():
-            cio.write(bytearray([len(field_name)]))
-            cio.write(field_name.encode('utf-8'))
-            length += dump(elem, cio)
+        elif length < 65536:
+            cio.write(b'\x11')
+            cio.write(STRUCT_H.pack(length))
+            length = 3
+        elif length <= 0xFFFFFFFF:
+            cio.write(b'\x12')
+            cio.write(STRUCT_L.pack(length))
+            length = 5
+        try:
+            for field_name, elem in data.items():
+                cio.write(bytearray([len(field_name)]))
+                cio.write(field_name.encode('utf-8'))
+                length += dump(elem, cio)
+        except TypeError as e:
+            raise EncodingError('Keys have to be strings!') from e
         return length
     else:
         raise EncodingError('Unknown value type %s' % (data, ))
