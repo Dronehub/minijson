@@ -50,6 +50,13 @@ class TestMiniJSON(unittest.TestCase):
         self.assertSameAfterDumpsAndLoads(c)
         self.assertSameAfterDumpsAndLoads(d)
 
+    def test_too_long_string(self):
+        class Test(str):
+            def __len__(self):
+                return 0x1FFFFFFFF
+
+        self.assertRaises(EncodingError, lambda: dumps(Test()))
+
     def test_lists(self):
         a = [None]*4
         self.assertSameAfterDumpsAndLoads(a)
@@ -87,11 +94,19 @@ class TestMiniJSON(unittest.TestCase):
         a = list(range(0x1FFFF))
         self.assertSameAfterDumpsAndLoads(a)
 
+    def test_weird_dict(self):
+        key = 'a'*300
+        a = {key: 2}
+        self.assertSameAfterDumpsAndLoads(a)
+
     def test_negatives(self):
         self.assertSameAfterDumpsAndLoads(-1)
         self.assertSameAfterDumpsAndLoads(-259)
         self.assertSameAfterDumpsAndLoads(-0x7FFF)
         self.assertSameAfterDumpsAndLoads(-0xFFFF)
+        self.assertSameAfterDumpsAndLoads(0x1FFFF)
+        self.assertSameAfterDumpsAndLoads(0x1FFFFFF)
+        self.assertRaises(EncodingError, lambda: dumps(0xFFFFFFFFF))
 
     def test_dumps(self):
         v = {"name": "land", "operator_id": "dupa", "parameters":
@@ -99,8 +114,10 @@ class TestMiniJSON(unittest.TestCase):
         self.assertSameAfterDumpsAndLoads(v)
 
     def test_loads_exception(self):
-        b = b'\x1F'
-        self.assertRaises(DecodingError, lambda: loads(b))
+        self.assertRaises(DecodingError, lambda: loads(b'\x1F'))
+        self.assertRaises(DecodingError, lambda: loads(b'\x00\x01'))
+        self.assertRaises(DecodingError, lambda: loads(b'\x00\x01\xFF'))
+        self.assertRaises(DecodingError, lambda: loads(b'\x81\xFF'))
 
     def test_loads(self):
         a = loads(b'\x0B\x03\x04name\x84land\x0Boperator_id\x84dupa\x0Aparameters\x0B\x03\x03lat\x09B4\xeb\x85\x03lon\x09B[33\x03alt\x09Cj\x00\x00')

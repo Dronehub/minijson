@@ -408,13 +408,10 @@ cpdef int dump(object data, cio: io.BytesIO) except -1:
                 cio.write(b'\x12')
                 cio.write(STRUCT_L.pack(length))
                 length = 5
-            try:
-                for field_name, elem in data.items():
-                    cio.write(bytearray([len(field_name)]))
-                    cio.write(field_name.encode('utf-8'))
-                    length += dump(elem, cio)
-            except TypeError as e:
-                raise EncodingError('Keys have to be strings!') from e
+            for field_name, elem in data.items():
+                cio.write(bytearray([len(field_name)]))
+                cio.write(field_name.encode('utf-8'))
+                length += dump(elem, cio)
             return length
         else:
             if length <= 0xF:
@@ -432,7 +429,7 @@ cpdef int dump(object data, cio: io.BytesIO) except -1:
                 cio.write(STRUCT_L.pack(length))
                 offset = 5
             else:
-                raise EncodingError('Too long of a string!')
+                raise EncodingError('Too long of a sdict!')
 
             for key, value in data.items():
                 offset += dump(key, cio)
