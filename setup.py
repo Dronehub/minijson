@@ -12,6 +12,7 @@ if 'DEBUG' in os.environ:
     dont_snakehouse = True
     build_kwargs.update(gdb_debug=True)
     directives['embedsignature'] = True
+    directives['linetrace'] = True
 
 
 setup(version='1.7',
