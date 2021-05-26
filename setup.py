@@ -20,6 +20,9 @@ if 'DEBUG' in os.environ:
     multi_kwargs['define_macros'] = [('CYTHON_TRACE', '1'),
                                      ('CYTHON_TRACE_NOGIL', '1')]
 
+    import Cython.Compiler.Options
+    Cython.Compiler.Options.annotate = True
+
 
 setup(version='1.7',
       packages=find_packages(include=['minijson', 'minijson.*']),
