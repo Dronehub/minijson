@@ -13,8 +13,9 @@ if 'DEBUG' in os.environ:
     print('Enabling debug mode')
     dont_snakehouse = True
     build_kwargs.update(gdb_debug=True)
-    directives['embedsignature'] = True
-    directives['linetrace'] = True
+    directives.update(embedsignature=True,
+                      profile=True,
+                      linetrace=True)
     multi_kwargs['define_macros'] = [('CYTHON_TRACE', '1')]
 
 
