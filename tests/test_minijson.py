@@ -19,12 +19,9 @@ class TestMiniJSON(unittest.TestCase):
         self.assertLoadingIsDecodingError(b'\x82\x00')
 
     def test_short_nonstring_key_dicts(self):
-        a = {i: i for i in range(20)}
-        self.assertSameAfterDumpsAndLoads(a)
-        a = {i: i for i in range(300)}
-        self.assertSameAfterDumpsAndLoads(a)
-        a = {i: i for i in range(66000)}
-        self.assertSameAfterDumpsAndLoads(a)
+        self.assertSameAfterDumpsAndLoads({i: i for i in range(20)})
+        self.assertSameAfterDumpsAndLoads({i: i for i in range(300)})
+        self.assertSameAfterDumpsAndLoads({i: i for i in range(66000)})
 
     def test_invalid_name_dict(self):
         self.assertLoadingIsDecodingError(b'\x15\x01\x81\x01')
@@ -50,23 +47,15 @@ class TestMiniJSON(unittest.TestCase):
         self.assertSameAfterDumpsAndLoads('t'*65540)
 
     def test_lists(self):
-        a = [None]*4
-        self.assertSameAfterDumpsAndLoads(a)
-
-        a = [None]*256
-        self.assertSameAfterDumpsAndLoads(a)
-
-    def test_long_lists(self):
-        a = [None]*17
-        self.assertSameAfterDumpsAndLoads(a)
+        self.assertSameAfterDumpsAndLoads([None]*4)
+        self.assertSameAfterDumpsAndLoads([None]*256)
+        self.assertSameAfterDumpsAndLoads([None]*17)
 
     def test_long_dicts(self):
-        a = {str(i): i for i in range(17)}
-        self.assertSameAfterDumpsAndLoads(a)
+        self.assertSameAfterDumpsAndLoads({str(i): i for i in range(17)})
 
     def test_dicts_not_string_keys(self):
-        a = {i: i for i in range(17)}
-        self.assertSameAfterDumpsAndLoads(a)
+        self.assertSameAfterDumpsAndLoads({i: i for i in range(17)})
 
     def test_long_dicts_and_lists(self):
         self.assertSameAfterDumpsAndLoads({str(i): i*2 for i in range(65535)})
