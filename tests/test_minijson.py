@@ -3,6 +3,17 @@ from minijson import dumps, loads, dumps_object, loads_object, EncodingError, De
 
 
 class TestMiniJSON(unittest.TestCase):
+
+    def test_lists(self):
+        a = [1, 2, 3]
+        b = dumps(a)
+        print(f'Serialized {b}')
+        c = loads(b)
+        self.assertEqual(a, c)
+
+        a = [None]*256
+        self.assertRaises(EncodingError, lambda: dumps(a))
+
     def test_exceptions(self):
         a = {}
         for i in range(65535):

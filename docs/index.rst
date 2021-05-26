@@ -10,7 +10,7 @@ Welcome to MiniJSON's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-
+   usage
 
 Indices and tables
 ==================

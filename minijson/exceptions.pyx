@@ -1,11 +1,14 @@
 class MiniJSONError(ValueError):
-    """Base class for MiniJSON errors"""
-    pass
+    """
+    Base class for MiniJSON errors.
+
+    Note that it inherits from :code:`ValueError`.
+    """
+
 
 class EncodingError(MiniJSONError):
     """Error during encoding"""
-    pass
+
 
 class DecodingError(MiniJSONError):
     """Error during decoding"""
-    pass

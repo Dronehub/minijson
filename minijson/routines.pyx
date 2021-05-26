@@ -65,8 +65,8 @@ cpdef tuple parse(bytes data, int starting_position):
             return string_length+1, data[starting_position+1:starting_position+string_length+1].decode('utf-8')
         except UnicodeDecodeError as e:
             raise DecodingError('Invalid UTF-8') from e
-    elif value_type & 0xF0 == 0b01000000:
-        list_length = value_type & 0xF
+    elif value_type & 0xF0 == 0x40:
+        elements = value_type & 0xF
         offset = 1
         e_list = []
         for i in range(elements):
@@ -74,10 +74,11 @@ cpdef tuple parse(bytes data, int starting_position):
             offset += length
             e_list.append(elem)
         return offset, e_list
-    elif value_type & 0xF0 == 0b01010000:
+    elif value_type & 0xF0 == 0x50:
         e_dict = {}
         offset = 1
         elements = value_type & 0xF
+
         for i in range(elements):
             length, b_field_name = parse_cstring(data, starting_position+offset)
             s_field_name = b_field_name.decode('utf-8')
