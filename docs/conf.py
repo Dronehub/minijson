@@ -18,7 +18,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'MiniJSON'
-copyright = '2021, Piotr Maślanka'
+copyright = '2021 Dronehub Group sp. z o. o.'
 author = 'Piotr Maślanka'
 
 # The full version, including alpha/beta/rc tags
@@ -30,8 +30,8 @@ release = '1.0'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = [
-]
+extensions = ['sphinx.ext.autodoc']
+
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
