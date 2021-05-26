@@ -13,6 +13,7 @@ class TestMiniJSON(unittest.TestCase):
         self.assertRaises(DecodingError, lambda: loads(b'\x00\x02a'))
         self.assertRaises(DecodingError, lambda: loads(b'\x00\x02a'))
         self.assertRaises(DecodingError, lambda: loads(b'\x09\x00'))
+        self.assertRaises(DecodingError, lambda: loads(b'\x82\x00'))
 
     def test_short_nonstring_key_dicts(self):
         a = {}
@@ -30,10 +31,14 @@ class TestMiniJSON(unittest.TestCase):
     def test_invalid_name_dict(self):
         self.assertRaises(DecodingError, lambda: loads(b'\x15\x01\x81\x01'))
         self.assertRaises(DecodingError, lambda: loads(b'\x0B\x01\x01\xFF\x15'))
+        self.assertRaises(DecodingError, lambda: loads(b'\x0D\x01\x00\x00'))
+        self.assertRaises(DecodingError, lambda: loads(b'\x0E\x00\x00\x01\x00\x00'))
 
     def test_encode_double(self):
         switch_default_double()
-        self.assertGreaterEqual(len(dumps(4.5)), 5)
+        b = dumps(4.5)
+        self.assertGreaterEqual(len(b), 5)
+        self.assertEqual(loads(b), 4.5)
         switch_default_float()
 
     def test_booleans(self):
@@ -105,6 +110,7 @@ class TestMiniJSON(unittest.TestCase):
         self.assertSameAfterDumpsAndLoads(-0x7FFF)
         self.assertSameAfterDumpsAndLoads(-0xFFFF)
         self.assertSameAfterDumpsAndLoads(0x1FFFF)
+        self.assertSameAfterDumpsAndLoads(0xFFFFFFFF)
         self.assertSameAfterDumpsAndLoads(0x1FFFFFF)
         self.assertRaises(EncodingError, lambda: dumps(0xFFFFFFFFF))
 
