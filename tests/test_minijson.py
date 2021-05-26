@@ -7,7 +7,6 @@ class TestMiniJSON(unittest.TestCase):
     def test_lists(self):
         a = [1, 2, 3]
         b = dumps(a)
-        print(f'Serialized {b}')
         c = loads(b)
         self.assertEqual(a, c)
 
@@ -28,9 +27,7 @@ class TestMiniJSON(unittest.TestCase):
         v = {"name": "land", "operator_id": "dupa", "parameters":
             {"lat": 45.22999954223633, "lon": 54.79999923706055, "alt": 234}}
         b = dumps(v)
-        print(f'Serialized {b}')
         c = loads(b)
-        print(f'Recovered {c}')
         self.assertEqual(v, c)
 
     def test_loads_exception(self):
