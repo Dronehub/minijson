@@ -1,10 +1,7 @@
 MiniJSON specification
 ======================
 
-MiniJSON is a binary encoding for a subset of JSON that:
-
-* has no keys longer than 255 bytes UTF-8
-* all keys are string
+MiniJSON is a space-aware binary encoding for a JSON.
 
 All data is stored as bigger endian.
 
@@ -56,3 +53,5 @@ with len of (value & 0x7F)
   and then an object follows of that many elements
 * If value is 18, then next data is a unsigned int,
   and then an object follows of that many elements
+* If value is 19, then next data is a unsigned int,
+    and then follow that many pairs of Values (key: value)

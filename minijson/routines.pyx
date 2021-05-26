@@ -81,6 +81,38 @@ cdef inline tuple parse_dict(bytes data, int elem_count, int starting_position):
         dct[s_field_name] = elem
     return offset, dct
 
+cdef inline tuple parse_sdict(bytes data, int elem_count, int starting_position):
+    """
+    Parse a sdict (with keys that are not strings) with this many elements
+    
+    :param data: data to parse as a list
+    :param elem_count: count of elements 
+    :param starting_position: starting position
+
+    :return: tuple of (how many bytes were there in the list, the dict itself)
+    """
+    cdef:
+        dict dct = {}
+        bytes b_field_name
+        str s_field_name
+        int i, ofs, offset = 0
+    for i in range(elem_count):
+        ofs, key = parse(data, starting_position+offset)
+        offset += ofs
+        ofs, elem = parse(data, starting_position+offset)
+        offset += ofs
+        dct[key] = elem
+    return offset, dct
+
+
+cdef bint can_be_encoded_as_a_dict(dict dct):
+    for key, value in dct.items():
+        if not isinstance(key, str):
+            return False
+        if len(key) > 255:
+            return False
+    return True
+
 
 cpdef tuple parse(bytes data, int starting_position):
     """
@@ -192,6 +224,10 @@ cpdef tuple parse(bytes data, int starting_position):
             elements, = STRUCT_L.unpack(data[starting_position+1:starting_position+5])
             offset, e_dict = parse_dict(data, elements, starting_position+5)
             return offset+5, e_dict
+        elif value_type == 19:
+            elements, = STRUCT_L.unpack(data[starting_position+1:starting_position+5])
+            offset, e_dict = parse_sdict(data, elements, starting_position+5)
+            return offset+5, e_dict
         raise DecodingError('Unknown sequence type %s!' % (value_type, ))
     except IndexError as e:
         raise DecodingError('String too short!') from e
@@ -302,28 +338,37 @@ cpdef int dump(object data, cio: io.BytesIO) except -1:
         return length
     elif isinstance(data, dict):
         length = len(data)
-        if length < 16:
-            cio.write(bytearray([0b01010000 | length]))
-            length = 1
-        elif length < 256:
-            cio.write(bytearray([11, len(data)]))
-            length = 2
-        elif length < 65536:
-            cio.write(b'\x11')
-            cio.write(STRUCT_H.pack(length))
-            length = 3
-        elif length <= 0xFFFFFFFF:
-            cio.write(b'\x12')
+        if can_be_encoded_as_a_dict(data):
+            if length < 16:
+                cio.write(bytearray([0b01010000 | length]))
+                length = 1
+            elif length < 256:
+                cio.write(bytearray([11, len(data)]))
+                length = 2
+            elif length < 65536:
+                cio.write(b'\x11')
+                cio.write(STRUCT_H.pack(length))
+                length = 3
+            elif length <= 0xFFFFFFFF:
+                cio.write(b'\x12')
+                cio.write(STRUCT_L.pack(length))
+                length = 5
+            try:
+                for field_name, elem in data.items():
+                    cio.write(bytearray([len(field_name)]))
+                    cio.write(field_name.encode('utf-8'))
+                    length += dump(elem, cio)
+            except TypeError as e:
+                raise EncodingError('Keys have to be strings!') from e
+            return length
+        else:
+            cio.write(b'\x13')
             cio.write(STRUCT_L.pack(length))
-            length = 5
-        try:
-            for field_name, elem in data.items():
-                cio.write(bytearray([len(field_name)]))
-                cio.write(field_name.encode('utf-8'))
-                length += dump(elem, cio)
-        except TypeError as e:
-            raise EncodingError('Keys have to be strings!') from e
-        return length
+            offset = 5
+            for key, value in data.items():
+                offset += dump(key, cio)
+                offset += dump(value, cio)
+            return offset
     else:
         raise EncodingError('Unknown value type %s' % (data, ))
 
