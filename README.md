@@ -5,7 +5,7 @@ MiniJSON
 [![PyPI version](https://badge.fury.io/py/minijson.svg)](https://badge.fury.io/py/minijson)
 [![PyPI](https://img.shields.io/pypi/implementation/minijson.svg)](https://pypi.python.org/pypi/minijson)
 
-MiniJSON is a codec for a compact binary representation of a subset of JSON.
+MiniJSON is a codec for a compact binary representation of JSON.
 
 Usage
 -----
