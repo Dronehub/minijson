@@ -318,9 +318,7 @@ cpdef int dump(object data, cio: io.BytesIO) except -1:
         return 1
     elif isinstance(data, str):
         length = len(data)
-        if length < 0:
-            raise EncodingError('Invalid length!')
-        elif length < 128:
+        if length < 128:
             cio.write(bytearray([0x80 | length]))
             cio.write(data.encode('utf-8'))
             return 1+length
@@ -333,13 +331,11 @@ cpdef int dump(object data, cio: io.BytesIO) except -1:
             cio.write(STRUCT_H.pack(length))
             cio.write(data.encode('utf-8'))
             return 3+length
-        elif length <= 0xFFFFFFFF:
+        else:       # Python strings cannot grow past 0xFFFFFFFF characters
             cio.write(b'\x0E')
             cio.write(STRUCT_L.pack(length))
             cio.write(data.encode('utf-8'))
             return 5+length
-        else:
-            raise EncodingError('String is too long!')
     elif isinstance(data, int):
         if -128 <= data <= 127: # signed char, type 3
             cio.write(b'\x03')
@@ -439,12 +435,10 @@ cpdef int dump(object data, cio: io.BytesIO) except -1:
                 cio.write(b'\x15')
                 cio.write(STRUCT_H.pack(length))
                 offset = 3
-            elif length <= 0xFFFFFFFF:
+            else:       # Python objects cannot grow to have more than 0xFFFFFFFF members
                 cio.write(b'\x13')
                 cio.write(STRUCT_L.pack(length))
                 offset = 5
-            else:
-                raise EncodingError('Too long of a sdict!')
 
             for key, value in data.items():
                 offset += dump(key, cio)

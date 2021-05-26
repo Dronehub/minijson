@@ -50,13 +50,6 @@ class TestMiniJSON(unittest.TestCase):
         self.assertSameAfterDumpsAndLoads(c)
         self.assertSameAfterDumpsAndLoads(d)
 
-    def test_too_long_string(self):
-        class Test(str):
-            def __len__(self):
-                return 0x1FFFFFFFF
-
-        self.assertRaises(EncodingError, lambda: dumps(Test()))
-
     def test_lists(self):
         a = [None]*4
         self.assertSameAfterDumpsAndLoads(a)
