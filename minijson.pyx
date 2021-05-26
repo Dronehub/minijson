@@ -313,7 +313,9 @@ cpdef int dump(object data, cio: io.BytesIO) except -1:
         return 1
     elif isinstance(data, str):
         length = len(data)
-        if length < 128:
+        if length < 0:
+            raise EncodingError('Invalid length!')
+        elif length < 128:
             cio.write(bytearray([0x80 | length]))
             cio.write(data.encode('utf-8'))
             return 1+length
