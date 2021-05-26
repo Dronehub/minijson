@@ -44,13 +44,13 @@ cpdef void switch_default_double():
     global float_encoding_mode
     float_encoding_mode = 1
 
-cdef tuple parse_cstring(bytes data, int starting_position):
+cdef inline tuple parse_cstring(bytes data, int starting_position):
     cdef:
         int strlen = data[starting_position]
         bytes subdata = data[starting_position+1:starting_position+1+strlen]
     return strlen+1, subdata
 
-cdef tuple parse_list(bytes data, int elem_count, int starting_position):
+cdef inline tuple parse_list(bytes data, int elem_count, int starting_position):
     """
     Parse a list with this many elements
     
@@ -120,8 +120,8 @@ cdef inline tuple parse_sdict(bytes data, int elem_count, int starting_position)
     return offset, dct
 
 
-cdef bint can_be_encoded_as_a_dict(dict dct):
-    for key, value in dct.items():
+cdef inline bint can_be_encoded_as_a_dict(dict dct):
+    for key in dct.keys():
         if not isinstance(key, str):
             return False
         if len(key) > 255:
@@ -167,16 +167,13 @@ cpdef tuple parse(bytes data, int starting_position):
                 raise DecodingError('Invalid UTF-8') from e
         elif value_type & 0xF0 == 0x40:
             elements = value_type & 0xF
-            e_list = []
             string_length, e_list = parse_list(data, elements, starting_position+1)
             return string_length+1, e_list
         elif value_type & 0xF0 == 0x50:
-            e_dict = {}
             elements = value_type & 0xF
             offset, e_dict = parse_dict(data, elements, starting_position+1)
             return offset+1, e_dict
         elif value_type & 0xF0 == 0x60:
-            e_dict = {}
             elements = value_type & 0xF
             offset, e_dict = parse_sdict(data, elements, starting_position+1)
             return offset+1, e_dict
@@ -212,7 +209,6 @@ cpdef tuple parse(bytes data, int starting_position):
                 return 2, sint8
         elif value_type == 7:
             elements = data[starting_position+1]
-            e_list = []
             offset, e_list = parse_list(data, elements, starting_position+2)
             return offset+2, e_list
         elif value_type == 8:
@@ -226,7 +222,6 @@ cpdef tuple parse(bytes data, int starting_position):
             return 4, uint32
         elif value_type == 11:
             elements = data[starting_position+1]
-            e_dict = {}
             offset, e_dict = parse_dict(data, elements, starting_position+2)
             return offset+2, e_dict
         elif value_type == 13:
