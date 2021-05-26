@@ -13,7 +13,7 @@ jobs:
     - stage: test
       python: "3.8"
       script:
-        - DEBUG=1 pytest --cov=minijson
+        - py.test --cov
       after_script:
         - coverage xml
         - ./cc-test-reporter after-build -t coverage.py --exit-code ${TRAVIS_TEST_RESULT}
