@@ -1,5 +1,6 @@
 import unittest
-from minijson import dumps, loads, dumps_object, loads_object, EncodingError, DecodingError
+from minijson import dumps, loads, dumps_object, loads_object, EncodingError, DecodingError, \
+    switch_default_double, switch_default_float
 
 
 class TestMiniJSON(unittest.TestCase):
@@ -25,6 +26,11 @@ class TestMiniJSON(unittest.TestCase):
         for i in range(700000):
             a[i] = i
         self.assertSameAfterDumpsAndLoads(a)
+
+    def test_encode_double(self):
+        switch_default_double()
+        self.assertGreaterEqual(len(dumps(4.5)), 5)
+        switch_default_float()
 
     def test_booleans(self):
         self.assertSameAfterDumpsAndLoads({'test': True,
