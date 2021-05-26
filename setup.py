@@ -14,7 +14,7 @@ if 'DEBUG' in os.environ:
     directives['embedsignature'] = True
 
 
-setup(version='1.1',
+setup(version='1.2a1',
       packages=find_packages(include=['minijson', 'minijson.*']),
       ext_modules=build([Multibuild('minijson', find_pyx('minijson'),
                                     dont_snakehouse=dont_snakehouse), ],
