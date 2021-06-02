@@ -14,11 +14,18 @@ after_script:
 jobs:
   include:
     - stage: test
-      python: "3.8"
+      python: "pypy3.5"
+      before_script:
+        - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+        - chmod +x ./cc-test-reporter
+        - ./cc-test-reporter before-build
+        - pypy3 -m pip install -r requirements.txt
+        - pypy3 -m pip install pytest coverage pytest-cov
+        - DEBUG=1 pypy3 setup.py install
       script:
         - pytest --cov=./ --cov-report=xml
     - stage: test
-      python: "pypy3.5"
+      python: "3.8"
       script:
         - pytest --cov=./ --cov-report=xml
     - stage: test
