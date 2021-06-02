@@ -18,6 +18,14 @@ jobs:
       script:
         - pytest --cov=./ --cov-report=xml
     - stage: test
+      python: "pypy3.5"
+      script:
+        - pytest --cov=./ --cov-report=xml
+    - stage: test
+      python: "3.5"
+      script:
+        - pytest --cov=./ --cov-report=xml
+    - stage: test
       python: "3.6"
       script:
         - pytest --cov=./ --cov-report=xml
