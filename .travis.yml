@@ -1,4 +1,8 @@
 language: python
+stages:
+  - name: test
+  - name: deploy
+    if: tag is present
 cache: pip
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
@@ -13,17 +17,6 @@ after_script:
   - ./cc-test-reporter after-build -t coverage.py --exit-code ${TRAVIS_TEST_RESULT}
 jobs:
   include:
-    - stage: test
-      python: "pypy3.5"
-      before_script:
-        - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-        - chmod +x ./cc-test-reporter
-        - ./cc-test-reporter before-build
-        - pypy3 -m pip install -r requirements.txt
-        - pypy3 -m pip install pytest coverage pytest-cov
-        - DEBUG=1 pypy3 setup.py install
-      script:
-        - pytest --cov=./ --cov-report=xml
     - stage: test
       python: "3.8"
       script:
@@ -44,6 +37,80 @@ jobs:
       python: "3.9"
       script:
         - pytest --cov=./ --cov-report=xml
-
+    - stage: deploy
+      python: "3.8"
+      before_script:
+        - apt-get update
+        - apt-get install -y patchelf
+        - pip install wheel auditwheel twine doctor-wheel cython
+      script:
+        - python setup.py bdist_wheel
+        - cd dist
+        - doctor-wheel *.whl
+        - auditwheel repair --plat manylinux2014_x86_64 *.whl
+        - cd wheelhouse
+        - twine upload *.whl
+      after_script:
+        - echo "Done"
+    - stage: deploy
+      python: "3.9"
+      before_script:
+        - apt-get update
+        - apt-get install -y patchelf
+        - pip install wheel auditwheel twine doctor-wheel cython
+      script:
+        - python setup.py bdist_wheel
+        - cd dist
+        - doctor-wheel *.whl
+        - auditwheel repair --plat manylinux2014_x86_64 *.whl
+        - cd wheelhouse
+        - twine upload *.whl
+      after_script:
+        - echo "Done"
+    - stage: deploy
+      python: "3.7"
+      before_script:
+        - apt-get update
+        - apt-get install -y patchelf
+        - pip install wheel auditwheel twine doctor-wheel cython
+      script:
+        - python setup.py bdist_wheel
+        - cd dist
+        - doctor-wheel *.whl
+        - auditwheel repair --plat manylinux2014_x86_64 *.whl
+        - cd wheelhouse
+        - twine upload *.whl
+      after_script:
+        - echo "Done"
+    - stage: deploy
+      python: "3.6"
+      before_script:
+        - apt-get update
+        - apt-get install -y patchelf
+        - pip install wheel auditwheel twine doctor-wheel cython
+      script:
+        - python setup.py bdist_wheel
+        - cd dist
+        - doctor-wheel *.whl
+        - auditwheel repair --plat manylinux2014_x86_64 *.whl
+        - cd wheelhouse
+        - twine upload *.whl
+      after_script:
+        - echo "Done"
+    - stage: deploy
+      python: "3.5"
+      before_script:
+        - apt-get update
+        - apt-get install -y patchelf
+        - pip install wheel auditwheel twine doctor-wheel cython
+      script:
+        - python setup.py bdist_wheel
+        - cd dist
+        - doctor-wheel *.whl
+        - auditwheel repair --plat manylinux2014_x86_64 *.whl
+        - cd wheelhouse
+        - twine upload *.whl
+      after_script:
+        - echo "Done"
 
 

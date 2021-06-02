@@ -65,3 +65,6 @@ Type Value consists of:
 * If value is 23, then it's False
 * If value is 24, then next what comes is count of bytes, and then bytes follow. This is to be
     interpreted as a signed integer
+
+Coder **should** encode the value as one having the smallest binary representation, but that is not
+required. Decoder **must** parse any arbitrary valid string.

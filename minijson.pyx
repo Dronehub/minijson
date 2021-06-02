@@ -19,16 +19,16 @@ class DecodingError(MiniJSONError):
     """Error during decoding"""
 
 
-STRUCT_f = struct.Struct('>f')
-STRUCT_d = struct.Struct('>d')
-STRUCT_b = struct.Struct('>b')
-STRUCT_h = struct.Struct('>h')
-STRUCT_H = struct.Struct('>H')
-STRUCT_l = struct.Struct('>l')
-STRUCT_L = struct.Struct('>L')
-
-cdef int float_encoding_mode = 0     # 0 for default FLOAT
-                                     # 1 for default DOUBLE
+cdef:
+    object STRUCT_f = struct.Struct('>f')
+    object STRUCT_d = struct.Struct('>d')
+    object STRUCT_b = struct.Struct('>b')
+    object STRUCT_h = struct.Struct('>h')
+    object STRUCT_H = struct.Struct('>H')
+    object STRUCT_l = struct.Struct('>l')
+    object STRUCT_L = struct.Struct('>L')
+    int float_encoding_mode = 0     # 0 for default FLOAT
+                                    # 1 for default DOUBLE
 
 cpdef void switch_default_float():
     """
