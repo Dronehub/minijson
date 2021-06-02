@@ -40,8 +40,8 @@ jobs:
     - stage: deploy
       python: "3.8"
       before_script:
-        - apt-get update
-        - apt-get install -y patchelf
+        - sudo apt-get update
+        - sudo apt-get install -y patchelf
         - pip install wheel auditwheel twine doctor-wheel cython
       script:
         - python setup.py bdist_wheel
@@ -55,8 +55,8 @@ jobs:
     - stage: deploy
       python: "3.9"
       before_script:
-        - apt-get update
-        - apt-get install -y patchelf
+        - sudo apt-get update
+        - sudo apt-get install -y patchelf
         - pip install wheel auditwheel twine doctor-wheel cython
       script:
         - python setup.py bdist_wheel
@@ -70,8 +70,8 @@ jobs:
     - stage: deploy
       python: "3.7"
       before_script:
-        - apt-get update
-        - apt-get install -y patchelf
+        - sudo apt-get update
+        - sudo apt-get install -y patchelf
         - pip install wheel auditwheel twine doctor-wheel cython
       script:
         - python setup.py bdist_wheel
@@ -100,8 +100,8 @@ jobs:
     - stage: deploy
       python: "3.5"
       before_script:
-        - apt-get update
-        - apt-get install -y patchelf
+        - sudo apt-get update
+        - sudo apt-get install -y patchelf
         - pip install wheel auditwheel twine doctor-wheel cython
       script:
         - python setup.py bdist_wheel
