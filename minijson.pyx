@@ -64,7 +64,7 @@ cdef inline tuple parse_list(bytes data, int elem_count, int starting_position):
         list lst = []
         int i, ofs, offset = 0
     for i in range(elem_count):
-        ofs, elem = parse(data, starting_position+offset)
+        ofs, elem = parse_bytes(data, starting_position+offset)
         offset += ofs
         lst.append(elem)
     return offset, lst
@@ -91,7 +91,7 @@ cdef inline tuple parse_dict(bytes data, int elem_count, int starting_position):
         except UnicodeDecodeError as e:
             raise DecodingError('Invalid UTF-8 field name!') from e
         offset += ofs
-        ofs, elem = parse(data, starting_position+offset)
+        ofs, elem = parse_bytes(data, starting_position+offset)
         offset += ofs
         dct[s_field_name] = elem
     return offset, dct
@@ -112,9 +112,9 @@ cdef inline tuple parse_sdict(bytes data, int elem_count, int starting_position)
         str s_field_name
         int i, ofs, offset = 0
     for i in range(elem_count):
-        ofs, key = parse(data, starting_position+offset)
+        ofs, key = parse_bytes(data, starting_position+offset)
         offset += ofs
-        ofs, elem = parse(data, starting_position+offset)
+        ofs, elem = parse_bytes(data, starting_position+offset)
         offset += ofs
         dct[key] = elem
     return offset, dct
@@ -129,17 +129,7 @@ cdef inline bint can_be_encoded_as_a_dict(dict dct):
     return True
 
 
-cpdef tuple parse(bytes data, int starting_position):
-    """
-    Parse given stream of data starting at a position
-    and return a tuple of (how many bytes does this piece of data take, the piece of data itself)
-    
-    :param data: stream of bytes to examine 
-    :param starting_position: first position in the bytestring at which to look
-    :return: a tuple of (how many bytes does this piece of data take, the piece of data itself)
-    :rtype: tp.Tuple[int, tp.Any]
-    :raises DecodingError: invalid stream
-    """
+cdef tuple parse_bytes(bytes data, int starting_position):
     cdef:
         int value_type
         int string_length, elements, i, offset, length
@@ -279,11 +269,29 @@ cpdef tuple parse(bytes data, int starting_position):
     except (IndexError, struct.error) as e:
         raise DecodingError('String too short!') from e
 
-cpdef object loads(bytes data):
+
+cpdef tuple parse(object data, int starting_position):
+    """
+    Parse given stream of data starting at a position
+    and return a tuple of (how many bytes does this piece of data take, the piece of data itself)
+    
+    :param data: stream of bytes to examine. Must be able to provide it's bytes value
+        via :code:`__bytes__` 
+    :param starting_position: first position in the bytestring at which to look
+    :return: a tuple of (how many bytes does this piece of data take, the piece of data itself)
+    :rtype: tp.Tuple[int, tp.Any]
+    :raises DecodingError: invalid stream
+    """
+    cdef bytes b_data = bytes(data)
+    return parse_bytes(b_data, starting_position)
+
+
+cpdef object loads(object data):
     """
     Reconstruct given JSON from a given value
 
-    :param data: MiniJSON value to reconstruct it from
+    :param data: MiniJSON value to reconstruct it from.
+        Must be able to provide bytes representation.
     :return: return value
     :raises DecodingError: something was wrong with the stream
     """
@@ -467,7 +475,7 @@ cpdef bytes dumps_object(object data):
     """
     return dumps(data.__dict__)
 
-cpdef object loads_object(bytes data, object obj_class):
+cpdef object loads_object(data, object obj_class):
     """
     Load a dict from a bytestream, unserialize it and use it as a kwargs to instantiate
     an object of given class

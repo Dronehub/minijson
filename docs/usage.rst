@@ -50,6 +50,8 @@ arguments to the program, you can use functions below to serialize/unserialize t
 
 .. autofunction:: minijson.loads_object
 
+Dumps returns objects of type :code:`bytes`.
+
 Example:
 
 .. code-block:: python
