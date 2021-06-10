@@ -5,6 +5,12 @@ from minijson import dumps, loads, dumps_object, loads_object, EncodingError, De
 
 class TestMiniJSON(unittest.TestCase):
 
+    def test_accepts_bytearrays(self):
+        b = {'test': 'hello'}
+        a = dumps(b)
+        a = bytearray(a)
+        self.assertEqual(loads(a), b)
+
     def assertLoadingIsDecodingError(self, b: bytes):
         self.assertRaises(DecodingError, lambda: loads(b))
 
