@@ -17,5 +17,8 @@ Refer to the [documentation](http://minijson.readthedocs.io/en/latest/?badge=lat
 for use.
 
 If there are no binary wheels precompiled for this platform, you will need to compile it yourself.
+Alternatively, you can 
+[file an issue](https://github.com/Dronehub/minijson/issues/new)
+and I'll do my best to compile a wheel for you.
 
 In order to do that you must have `Cython` installed.
