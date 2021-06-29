@@ -2,4 +2,5 @@
 omit=
     setup.py
     docs/*
+    tests/*
 plugins = Cython.Coverage

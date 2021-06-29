@@ -120,7 +120,7 @@ cdef inline tuple parse_sdict(bytes data, int elem_count, int starting_position)
     return offset, dct
 
 
-cdef inline bint can_be_encoded_as_a_dict(dict dct):
+cdef inline bint can_be_encoded_as_a_dict(dct):
     for key in dct.keys():
         if not isinstance(key, str):
             return False
@@ -298,12 +298,18 @@ cpdef object loads(object data):
     return parse(data, 0)[1]
 
 
-cpdef int dump(object data, cio: io.BytesIO) except -1:
+cdef inline bint is_jsonable(y):
+    return y is None or isinstance(y, (int, float, str, dict, list, tuple))
+
+
+cpdef int dump(object data, cio: io.BytesIO, default: tp.Optional[tp.Callable] = None) except -1:
     """
     Write an object to a stream
 
     :param data: object to write
     :param cio: stream to write to
+    :param default: a function that should be used to convert non-JSONable objects to JSONable ones.
+        Default, None, will raise an EncodingError upon encountering such a value
     :return: amount of bytes written
     :raises EncodingError: invalid data
     """
@@ -404,7 +410,7 @@ cpdef int dump(object data, cio: io.BytesIO) except -1:
             cio.write(STRUCT_L.pack(length))
             length = 5
         for elem in data:
-            length += dump(elem, cio)
+            length += dump(elem, cio, default)
         return length
     elif isinstance(data, dict):
         length = len(data)
@@ -426,7 +432,7 @@ cpdef int dump(object data, cio: io.BytesIO) except -1:
             for field_name, elem in data.items():
                 cio.write(bytearray([len(field_name)]))
                 cio.write(field_name.encode('utf-8'))
-                length += dump(elem, cio)
+                length += dump(elem, cio, default)
             return length
         else:
             if length <= 0xF:
@@ -445,35 +451,47 @@ cpdef int dump(object data, cio: io.BytesIO) except -1:
                 offset = 5
 
             for key, value in data.items():
-                offset += dump(key, cio)
-                offset += dump(value, cio)
+                offset += dump(key, cio, default)
+                offset += dump(value, cio, default)
             return offset
-    else:
+    elif default is None:
         raise EncodingError('Unknown value type %s' % (data, ))
+    else:
+        v = default(data)
+        if not is_jsonable(v):
+            raise EncodingError('Default returned type %s, which is not jsonable' % (type(v), ))
+        return dump(v, cio, default)
 
 
-cpdef bytes dumps(object data):
+cpdef bytes dumps(object data, default: tp.Optional[tp.Callable] = None):
     """
     Serialize given data to a MiniJSON representation
 
     :param data: data to serialize
+    :param default: a function that should be used to convert non-JSONable objects to JSONable ones.
+        Default, None, will raise an EncodingError upon encountering such a value
     :return: return MiniJSON representation
-    :raises DecodingError: object not serializable
+    :raises EncodingError: object not serializable
     """
     cio = io.BytesIO()
-    dump(data, cio)
+    dump(data, cio, default)
     return cio.getvalue()
 
 
-cpdef bytes dumps_object(object data):
+cpdef bytes dumps_object(object data, default: tp.Optional[tp.Callable] = None):
     """
-    Dump an object's __dict__
+    Dump an object's :code:`__dict__`.
+    
+    Note that subobject's :code:`__dict__` will not be copied. Use default for that.
     
     :param data: object to dump 
+    :param default: a function that should be used to convert non-JSONable objects to JSONable ones.
+        Default, None, will raise an EncodingError upon encountering such a value
     :return: resulting bytes
     :raises EncodingError: encoding error
     """
-    return dumps(data.__dict__)
+    return dumps(data.__dict__, default)
+
 
 cpdef object loads_object(data, object obj_class):
     """

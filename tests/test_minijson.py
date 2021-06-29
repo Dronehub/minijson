@@ -17,6 +17,37 @@ class TestMiniJSON(unittest.TestCase):
     def assertSameAfterDumpsAndLoads(self, c):
         self.assertEqual(loads(dumps(c)), c)
 
+    def test_default(self):
+        def transform(c):
+            return c.real, c.imag
+
+        dumps(2 + 3j, transform)
+        dumps({'test': 2 + 3j}, transform)
+
+    def test_subclasses_of_dicts(self):
+        class Subclass(dict):
+            pass
+
+        a = Subclass({1: 2, 3: 4})
+        b = dumps(a)
+        self.assertEquals(loads(b), {1: 2, 3: 4})
+
+    def test_subclasses_of_lists(self):
+        class Subclass(list):
+            pass
+
+        a = Subclass([1, 2, 3])
+        b = dumps(a)
+        self.assertEquals(loads(b), [1, 2, 3])
+
+    def test_subclasses_of_tuples(self):
+        class Subclass(tuple):
+            pass
+
+        a = Subclass((1, 2, 3))
+        b = dumps(a)
+        self.assertEquals(loads(b), [1, 2, 3])
+
     def test_malformed(self):
         self.assertRaises(EncodingError, lambda: dumps(2 + 3j))
         self.assertLoadingIsDecodingError(b'\x00\x02a')
