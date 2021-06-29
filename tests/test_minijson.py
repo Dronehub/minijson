@@ -18,7 +18,7 @@ class TestMiniJSON(unittest.TestCase):
         self.assertEqual(loads(dumps(c)), c)
 
     def test_malformed(self):
-        self.assertRaises(EncodingError, lambda: dumps(2+3j))
+        self.assertRaises(EncodingError, lambda: dumps(2 + 3j))
         self.assertLoadingIsDecodingError(b'\x00\x02a')
         self.assertLoadingIsDecodingError(b'\x00\x02a')
         self.assertLoadingIsDecodingError(b'\x09\x00')
@@ -48,14 +48,14 @@ class TestMiniJSON(unittest.TestCase):
 
     def test_string(self):
         self.assertSameAfterDumpsAndLoads('test')
-        self.assertSameAfterDumpsAndLoads('t'*128)
-        self.assertSameAfterDumpsAndLoads('t'*65535)
-        self.assertSameAfterDumpsAndLoads('t'*65540)
+        self.assertSameAfterDumpsAndLoads('t' * 128)
+        self.assertSameAfterDumpsAndLoads('t' * 65535)
+        self.assertSameAfterDumpsAndLoads('t' * 65540)
 
     def test_lists(self):
-        self.assertSameAfterDumpsAndLoads([None]*4)
-        self.assertSameAfterDumpsAndLoads([None]*256)
-        self.assertSameAfterDumpsAndLoads([None]*17)
+        self.assertSameAfterDumpsAndLoads([None] * 4)
+        self.assertSameAfterDumpsAndLoads([None] * 256)
+        self.assertSameAfterDumpsAndLoads([None] * 17)
 
     def test_long_dicts(self):
         self.assertSameAfterDumpsAndLoads({str(i): i for i in range(17)})
@@ -64,13 +64,13 @@ class TestMiniJSON(unittest.TestCase):
         self.assertSameAfterDumpsAndLoads({i: i for i in range(17)})
 
     def test_long_dicts_and_lists(self):
-        self.assertSameAfterDumpsAndLoads({str(i): i*2 for i in range(65535)})
-        self.assertSameAfterDumpsAndLoads({str(i): i*2 for i in range(0x1FFFFF)})
+        self.assertSameAfterDumpsAndLoads({str(i): i * 2 for i in range(65535)})
+        self.assertSameAfterDumpsAndLoads({str(i): i * 2 for i in range(0x1FFFFF)})
         self.assertSameAfterDumpsAndLoads(list(range(0xFFFF)))
         self.assertSameAfterDumpsAndLoads(list(range(0x1FFFF)))
 
     def test_weird_dict(self):
-        self.assertSameAfterDumpsAndLoads({'a'*300: 2})
+        self.assertSameAfterDumpsAndLoads({'a' * 300: 2})
 
     def test_negatives(self):
         self.assertSameAfterDumpsAndLoads(-1)
@@ -95,7 +95,8 @@ class TestMiniJSON(unittest.TestCase):
         self.assertLoadingIsDecodingError(b'\x81\xFF')
 
     def test_loads(self):
-        a = loads(b'\x0B\x03\x04name\x84land\x0Boperator_id\x84dupa\x0Aparameters\x0B\x03\x03lat\x09B4\xeb\x85\x03lon\x09B[33\x03alt\x09Cj\x00\x00')
+        a = loads(
+            b'\x0B\x03\x04name\x84land\x0Boperator_id\x84dupa\x0Aparameters\x0B\x03\x03lat\x09B4\xeb\x85\x03lon\x09B[33\x03alt\x09Cj\x00\x00')
         self.assertEqual(a, {"name": "land", "operator_id": "dupa", "parameters":
             {"lat": 45.22999954223633, "lon": 54.79999923706055, "alt": 234}})
 

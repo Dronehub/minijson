@@ -14,6 +14,5 @@ if 'DEBUG' in os.environ:
     directive_defaults['binding'] = True
     macros = [('CYTHON_TRACE', '1')]
 
-
 setup(ext_modules=cythonize([Extension("minijson", ["minijson.pyx"],
-                        define_macros=macros)]))
+                                       define_macros=macros)]))
