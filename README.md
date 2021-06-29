@@ -1,6 +1,6 @@
-
 MiniJSON
 ========
+
 [![Build Status](https://travis-ci.com/Dronehub/minijson.svg)](https://travis-ci.com/Dronehub/minijson)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/34b392b61482d98ad3f0/test_coverage)](https://codeclimate.com/github/Dronehub/minijson/test_coverage)
 [![Issue Count](https://codeclimate.com/github/Dronehub/minijson/badges/issue_count.svg)](https://codeclimate.com/github/Dronehub/minijson)
@@ -10,7 +10,6 @@ MiniJSON
 [![PyPI](https://img.shields.io/pypi/implementation/minijson.svg)](https://pypi.python.org/pypi/minijson)
 
 MiniJSON is a codec for a compact binary representation of JSON.
-
 
 Usage
 -----
