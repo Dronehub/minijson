@@ -1,3 +1,4 @@
+
 MiniJSON
 ========
 [![Build Status](https://travis-ci.com/Dronehub/minijson.svg)](https://travis-ci.com/Dronehub/minijson)
@@ -10,14 +11,16 @@ MiniJSON
 
 MiniJSON is a codec for a compact binary representation of JSON.
 
+
 Usage
 -----
 
 Refer to the [documentation](http://minijson.readthedocs.io/en/latest/?badge=latest)
 for use.
 
-If there are no binary wheels precompiled for this platform, you will need to compile it yourself.
-Alternatively, you can 
+If there are no binary wheels precompiled for this platform, you will need to
+compile it yourself.
+Alternatively, you can
 [file an issue](https://github.com/Dronehub/minijson/issues/new)
 and I'll do my best to compile a wheel for you.
 
