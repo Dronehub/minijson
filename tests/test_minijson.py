@@ -17,7 +17,15 @@ class TestMiniJSON(unittest.TestCase):
     def assertSameAfterDumpsAndLoads(self, c):
         self.assertEqual(loads(dumps(c)), c)
 
+    def test_default_returns_nonjsonable(self):
+        """Assert that if transform returns a non-JSONable value, EncodingError is raised"""
+        def transform(c):
+            return c
+
+        self.assertRaises(EncodingError, lambda: dumps(2+3j, transform))
+
     def test_default(self):
+        """Assert the default argument works"""
         def transform(c):
             return c.real, c.imag
 
@@ -25,6 +33,7 @@ class TestMiniJSON(unittest.TestCase):
         dumps({'test': 2 + 3j}, transform)
 
     def test_subclasses_of_dicts(self):
+        """Assert that you can correctly serialize subclasses of dict"""
         class Subclass(dict):
             pass
 
@@ -33,6 +42,7 @@ class TestMiniJSON(unittest.TestCase):
         self.assertEquals(loads(b), {1: 2, 3: 4})
 
     def test_subclasses_of_lists(self):
+        """Assert that you can correctly serialize subclasses of list"""
         class Subclass(list):
             pass
 
@@ -41,6 +51,7 @@ class TestMiniJSON(unittest.TestCase):
         self.assertEquals(loads(b), [1, 2, 3])
 
     def test_subclasses_of_tuples(self):
+        """Assert that you can correctly serialize subclasses of tuple"""
         class Subclass(tuple):
             pass
 
@@ -49,6 +60,7 @@ class TestMiniJSON(unittest.TestCase):
         self.assertEquals(loads(b), [1, 2, 3])
 
     def test_malformed(self):
+        """Test unserializing malformed strings yields DecodingError"""
         self.assertRaises(EncodingError, lambda: dumps(2 + 3j))
         self.assertLoadingIsDecodingError(b'\x00\x02a')
         self.assertLoadingIsDecodingError(b'\x00\x02a')
