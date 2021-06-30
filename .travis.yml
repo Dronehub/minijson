@@ -10,7 +10,6 @@ before_script:
   - ./cc-test-reporter before-build
   - pip install -r requirements.txt
   - pip install pytest coverage pytest-cov
-  - DEBUG=1 python setup.py install
 after_script:
   - coverage xml
   - coverage report
@@ -18,24 +17,34 @@ after_script:
 jobs:
   include:
     - stage: test
+      python: "pypy3.5"
+      script:
+        - python setup.py install
+        - pytest --cov=./ --cov-report=xml
+    - stage: test
       python: "3.8"
       script:
+        - DEBUG=1 python setup.py install
         - pytest --cov=./ --cov-report=xml
     - stage: test
       python: "3.5"
       script:
+        - DEBUG=1 python setup.py install
         - pytest --cov=./ --cov-report=xml
     - stage: test
       python: "3.6"
       script:
+        - DEBUG=1 python setup.py install
         - pytest --cov=./ --cov-report=xml
     - stage: test
       python: "3.7"
       script:
+        - DEBUG=1 python setup.py install
         - pytest --cov=./ --cov-report=xml
     - stage: test
       python: "3.9"
       script:
+        - DEBUG=1 python setup.py install
         - pytest --cov=./ --cov-report=xml
     - stage: deploy
       python: "3.8"
@@ -99,6 +108,21 @@ jobs:
         - echo "Done"
     - stage: deploy
       python: "3.5"
+      before_script:
+        - sudo apt-get update
+        - sudo apt-get install -y patchelf
+        - pip install wheel auditwheel twine doctor-wheel cython
+      script:
+        - python setup.py bdist_wheel
+        - cd dist
+        - doctor-wheel *.whl
+        - auditwheel repair --plat manylinux2014_x86_64 *.whl
+        - cd wheelhouse
+        - twine upload -u $PYPI_USER -p $PYPI_PWD *.whl
+      after_script:
+        - echo "Done"
+    - stage: test
+      python: "pypy3.5"
       before_script:
         - sudo apt-get update
         - sudo apt-get install -y patchelf
