@@ -121,7 +121,7 @@ jobs:
         - twine upload -u $PYPI_USER -p $PYPI_PWD *.whl
       after_script:
         - echo "Done"
-    - stage: test
+    - stage: deploy
       python: "pypy3.5"
       before_script:
         - sudo apt-get update
