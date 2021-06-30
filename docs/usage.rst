@@ -66,3 +66,12 @@ Example:
     b = dumps_object(a)
     c = loads_object(b, Test)
     assert a.a == c.a
+
+MiniJSONEncoder
+---------------
+
+There's also a class available for encoding. Use it like you would a normal Python
+:code:`JSONEncoder`:
+
+.. autoclass:: minijson.MiniJSONEncoder
+    :members:

@@ -1,12 +1,12 @@
-FROM pypy:3.5
+FROM python:3.8
 RUN apt-get update && \
     apt-get install -y patchelf
-RUN pypy3 -m pip install Cython pytest coverage pytest-cov auditwheel doctor-wheel twine
+RUN python -m pip install Cython pytest coverage pytest-cov auditwheel doctor-wheel twine
 
 WORKDIR /tmp/compile
 ADD . /tmp/compile/
 
-RUN pypy3 setup.py install && \
+RUN python setup.py install && \
     chmod ugo+x /tmp/compile/tests/test.sh
 
 CMD ["/tmp/compile/tests/test.sh"]

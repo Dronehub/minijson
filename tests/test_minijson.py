@@ -1,9 +1,28 @@
 import unittest
 from minijson import dumps, loads, dumps_object, loads_object, EncodingError, DecodingError, \
-    switch_default_double, switch_default_float
+    switch_default_double, switch_default_float, MiniJSONEncoder
 
 
 class TestMiniJSON(unittest.TestCase):
+
+    def test_encoder_overrided_default(self):
+        class Encoder(MiniJSONEncoder):
+            def default(self, v):
+                return v.real, v.imag
+
+        e = Encoder()
+        e.encode(2+3j)
+
+    def test_encoder_given_default(self):
+        def encode(v):
+            return v.real, v.imag
+
+        e = MiniJSONEncoder(default=encode)
+        e.encode(2 + 3j)
+
+    def test_encoder_no_default(self):
+        e = MiniJSONEncoder()
+        self.assertRaises(EncodingError, lambda: e.encode(2+3j))
 
     def test_accepts_bytearrays(self):
         b = {'test': 'hello'}
