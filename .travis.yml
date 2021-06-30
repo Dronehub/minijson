@@ -23,7 +23,7 @@ jobs:
         - pypy3 -m pip install pytest coverage pytest-cov
       script:
         - pypy3 setup.py install
-        - pytest
+        - pypy3 setup.py test
       after_script:
         - echo "Do nothing"
     - stage: test
