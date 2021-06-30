@@ -18,8 +18,11 @@ jobs:
   include:
     - stage: test
       python: "pypy3.5"
+      before_script:
+        - pypy3 -m pip install -r requirements.txt
+        - pypy3 -m pip install pytest coverage pytest-cov
       script:
-        - python setup.py install
+        - pypy3 setup.py install
         - pytest
       after_script:
         - echo "Do nothing"
