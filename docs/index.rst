@@ -20,9 +20,6 @@ whose all keys are strings.
 You should avoid objects with keys different than strings, since they will always use a
 4-byte length field. This is to be improved in a future release.
 
-.. warning:: Take care for your data to be without cycles. Feeding the encoder cycles
-   will probably dump your interpreter's core.
-
 Indices and tables
 ==================
 

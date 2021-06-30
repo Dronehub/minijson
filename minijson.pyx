@@ -317,27 +317,27 @@ cdef class MiniJSONEncoder:
     """
     cdef:
         object _default
-        bint use_double
+        public bint use_double
 
     def __init__(self, default: tp.Optional[None] = None,
-                 use_double: bool = False):
+                 bint use_double = False):
         self._default = default
         self.use_double = use_double
 
-    cpdef bint should_double_be_used(self, double x):
+    def should_double_be_used(self, y) -> bool:
         """
         A function that you are meant to overload that will decide on a per-case basis
         which representation should be used for given number.
-        
-        :param x: number to check 
+
+        :param y: number to check
         :return: True if double should be used, else False
         """
         return self.use_double
 
-    cpdef default(self, v):
+    def default(self, v):
         """
         Convert an object to a JSON-able representation.
-        
+
         Overload this to provide your default function in other way that giving
         the callable as a parameter.
 
@@ -512,12 +512,19 @@ cdef class MiniJSONEncoder:
                 return offset
         else:
             v = self.default(data)
+            if not is_jsonable(v):
+                raise EncodingError('default returned a non-JSONable value!')
             return self.dump(v, cio)
 
 
-cpdef int dump(object data, cio: io.BytesIO, default: tp.Callable) except -1:
+cpdef int dump(object data, cio: io.BytesIO, default: tp.Optional[tp.Callable] = None) except -1:
     """
-    Write an object to a stream
+    Write an object to a stream.
+    
+    Note that this will load the initial value of current default float encoding mode and remember
+    it throughout the streaming process, so you can't change it mid-value.
+    
+    To do so, please use :class:`~minijson.MiniJSONEncoder`
 
     :param data: object to write
     :param cio: stream to write to
@@ -533,8 +540,13 @@ cpdef int dump(object data, cio: io.BytesIO, default: tp.Callable) except -1:
 
 cpdef bytes dumps(object data, default: tp.Optional[tp.Callable] = None):
     """
-    Serialize given data to a MiniJSON representation
+    Serialize given data to a MiniJSON representation.
 
+    Note that this will load the initial value of current default float encoding mode and remember
+    it throughout the streaming process, so you can't change it mid-value.
+    
+    To do so, please use :class:`~minijson.MiniJSONEncoder`
+        
     :param data: data to serialize
     :param default: a function that should be used to convert non-JSONable objects to JSONable ones.
         Default, None, will raise an EncodingError upon encountering such a value
@@ -551,6 +563,11 @@ cpdef bytes dumps_object(object data, default: tp.Optional[tp.Callable] = None):
     Dump an object's :code:`__dict__`.
     
     Note that subobject's :code:`__dict__` will not be copied. Use default for that.
+    
+    Note that this will load the initial value of current default float encoding mode and remember
+    it throughout the streaming process, so you can't change it mid-value.
+    
+    To do so, please use :class:`~minijson.MiniJSONEncoder`
     
     :param data: object to dump 
     :param default: a function that should be used to convert non-JSONable objects to JSONable ones.

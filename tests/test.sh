@@ -1,4 +1,4 @@
 #!/bin/bash
 
-pytest --cov=./ --cov-report=xml
+pytest --cov=./ --cov-report=xml -vv
 coverage report

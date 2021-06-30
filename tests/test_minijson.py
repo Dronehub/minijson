@@ -58,7 +58,17 @@ class TestMiniJSON(unittest.TestCase):
 
         a = Subclass({1: 2, 3: 4})
         b = dumps(a)
-        self.assertEquals(loads(b), {1: 2, 3: 4})
+        self.assertEqual(loads(b), {1: 2, 3: 4})
+
+    def test_should_double_be_used(self):
+        class Encoder(MiniJSONEncoder):
+            def should_double_be_used(self, y):
+                return y == 0
+
+        e = Encoder()
+
+        self.assertEqual(len(e.encode(0.0)), 9)
+        self.assertEqual(len(e.encode(1.0)), 5)
 
     def test_subclasses_of_lists(self):
         """Assert that you can correctly serialize subclasses of list"""
@@ -67,7 +77,7 @@ class TestMiniJSON(unittest.TestCase):
 
         a = Subclass([1, 2, 3])
         b = dumps(a)
-        self.assertEquals(loads(b), [1, 2, 3])
+        self.assertEqual(loads(b), [1, 2, 3])
 
     def test_subclasses_of_tuples(self):
         """Assert that you can correctly serialize subclasses of tuple"""
@@ -76,7 +86,7 @@ class TestMiniJSON(unittest.TestCase):
 
         a = Subclass((1, 2, 3))
         b = dumps(a)
-        self.assertEquals(loads(b), [1, 2, 3])
+        self.assertEqual(loads(b), [1, 2, 3])
 
     def test_malformed(self):
         """Test unserializing malformed strings yields DecodingError"""

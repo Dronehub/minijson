@@ -1,6 +1,9 @@
 Usage
 =====
 
+.. warning:: Take care for your data to be without cycles. Feeding the encoder cycles
+   will probably dump your interpreter's core.
+
 MiniJSON implements the same interface as json or yaml, namely:
 
 .. warning:: Cycles are not automatically detected. They might make the application hang
