@@ -103,12 +103,12 @@ jobs:
         - sudo apt-get install -y patchelf
         - pip install wheel auditwheel twine doctor-wheel cython
       script:
-        - python setup.py bdist_wheel
+        - python setup.py bdist_wheel sdist
         - cd dist
         - doctor-wheel *.whl
         - auditwheel repair --plat manylinux2014_x86_64 *.whl
         - cd wheelhouse
-        - twine upload -u $PYPI_USER -p $PYPI_PWD *.whl
+        - twine upload -u $PYPI_USER -p $PYPI_PWD *.whl ../*.gz
       after_script:
         - echo "Done"
     - stage: deploy
@@ -131,9 +131,9 @@ jobs:
       before_script:
         - sudo apt-get update
         - sudo apt-get install -y patchelf
-        - pip install wheel auditwheel twine doctor-wheel cython
+        - pypy3 -m pip install wheel auditwheel twine doctor-wheel cython
       script:
-        - python setup.py bdist_wheel
+        - pypy3 setup.py bdist_wheel
         - cd dist
         - doctor-wheel *.whl
         - auditwheel repair --plat manylinux2014_x86_64 *.whl
