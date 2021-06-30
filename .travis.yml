@@ -20,7 +20,9 @@ jobs:
       python: "pypy3.5"
       script:
         - python setup.py install
-        - pytest --cov=./ --cov-report=xml
+        - pytest
+      after_script:
+        - echo "Do nothing"
     - stage: test
       python: "3.8"
       script:
