@@ -9,7 +9,8 @@ MiniJSON
 [![PyPI version](https://badge.fury.io/py/minijson.svg)](https://badge.fury.io/py/minijson)
 [![PyPI](https://img.shields.io/pypi/implementation/minijson.svg)](https://pypi.python.org/pypi/minijson)
 [![PyPI](https://img.shields.io/pypi/wheel/minijson.svg)]()
-[![license](https://img.shields.io/github/license/mashape/apistatus.svg)]()
+[![License](https://img.shields.io/pypi/l/minijson)](https://github.com/Dronehub/minijson)
+
 
 MiniJSON is a codec for a compact binary representation of JSON.
 
