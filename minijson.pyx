@@ -581,12 +581,13 @@ cpdef bytes dumps_object(object data, default: tp.Optional[tp.Callable] = None):
 cpdef object loads_object(data, object obj_class):
     """
     Load a dict from a bytestream, unserialize it and use it as a kwargs to instantiate
-    an object of given class
+    an object of given class.
 
     :param data: data to unserialized 
     :param obj_class: class to instantiate
     :return: instance of obj_class
     :raises DecodingError: decoding error
+    :raises TypeError: invalid class has been passed (the argument's don't match)
     """
     cdef dict kwargs
     try:
