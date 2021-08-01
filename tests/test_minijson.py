@@ -1,4 +1,5 @@
 import unittest
+
 from minijson import dumps, loads, dumps_object, loads_object, EncodingError, DecodingError, \
     switch_default_double, switch_default_float, MiniJSONEncoder
 
@@ -12,6 +13,26 @@ class TestMiniJSON(unittest.TestCase):
 
         e = Encoder()
         e.encode(2+3j)
+
+    def test_bytes(self):
+        a = {b'test': b'dupa'}
+        e = MiniJSONEncoder()
+        b = e.encode(a)
+        self.assertEqual(loads(b), a)
+
+    def test_bytes_26(self):
+        a = b'x'*256
+        e = MiniJSONEncoder()
+        b = e.encode(a)
+        self.assertEqual(loads(b), a)
+        self.assertEqual(len(b), 256+3)
+
+    def test_bytes_27(self):
+        e = MiniJSONEncoder()
+        a = b'x'*65537
+        b = e.encode(a)
+        self.assertEqual(loads(b), a)
+        self.assertEqual(len(b), 65537+5)
 
     def test_encoder_given_default(self):
         def encode(v):

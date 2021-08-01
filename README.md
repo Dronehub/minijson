@@ -12,7 +12,8 @@ MiniJSON
 [![License](https://img.shields.io/pypi/l/minijson)](https://github.com/Dronehub/minijson)
 
 
-MiniJSON is a codec for a compact binary representation of JSON.
+MiniJSON is a codec for a compact binary representation of a superset of JSON (binary values)
+are supported.
 
 Usage
 -----

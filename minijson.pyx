@@ -132,8 +132,8 @@ cdef inline bint can_be_encoded_as_a_dict(dct):
 cdef tuple parse_bytes(bytes data, int starting_position):
     cdef:
         int value_type
-        int string_length, elements, i, offset, length
-        unsigned int uint32
+        int string_length, elements, i, offset
+        unsigned int uint32, length
         int sint32
         unsigned short uint16
         short sint16
@@ -264,6 +264,18 @@ cdef tuple parse_bytes(bytes data, int starting_position):
             length = data[starting_position+1]
             byte_data = data[starting_position+2:starting_position+2+length]
             return length+2, int.from_bytes(byte_data, 'big', signed=True)
+        elif value_type == 25:
+            length = data[starting_position+1]
+            byte_data = data[starting_position+2:starting_position+2+length]
+            return length+2, byte_data
+        elif value_type == 26:
+            length, = STRUCT_H.unpack(data[starting_position+1:starting_position+3])
+            byte_data = data[starting_position+3:starting_position+3+length]
+            return length+3, byte_data
+        elif value_type == 27:
+            length, = STRUCT_L.unpack(data[starting_position+1:starting_position+5])
+            byte_data = data[starting_position+5:starting_position+5+length]
+            return length+5, byte_data
         else:
             raise DecodingError('Unknown sequence type %s!' % (value_type, ))
     except (IndexError, struct.error) as e:
@@ -371,7 +383,7 @@ cdef class MiniJSONEncoder:
         """
         cdef:
             str field_name
-            int length
+            unsigned int length
             bytes b_data
         if data is None:
             cio.write(b'\x08')
@@ -382,6 +394,17 @@ cdef class MiniJSONEncoder:
         elif data is False:
             cio.write(b'\x17')
             return 1
+        elif isinstance(data, bytes):
+            length = len(data)
+            if length < 256:
+                cio.write(bytearray([0x19, length]))
+                cio.write(data)
+            elif length < 65536:
+                cio.write(b'\x1A' + struct.pack('>H', length))
+                cio.write(data)
+            else:
+                cio.write(b'\x1B' + struct.pack('>L', length))
+                cio.write(data)
         elif isinstance(data, str):
             length = len(data)
             if length < 128:
