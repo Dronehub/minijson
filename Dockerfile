@@ -6,6 +6,8 @@ RUN python -m pip install Cython pytest coverage pytest-cov auditwheel doctor-wh
 WORKDIR /tmp/compile
 ADD . /tmp/compile/
 
+ENV DEBUG=1
+
 RUN python setup.py install && \
     chmod ugo+x /tmp/compile/tests/test.sh
 

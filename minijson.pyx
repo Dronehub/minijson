@@ -323,18 +323,23 @@ cdef class MiniJSONEncoder:
 
     :param default: a default function used
     :param use_double: whether to use doubles instead of floats to represent floating point numbers
-
+    :param use_strict_order: if set to True, dictionaries will be encoded by first
+        dumping them to items and sorting the resulting elements, essentially
+        two same dicts will be encoded in the same way.
     :ivar use_double: (bool) whether to use doubles instead of floats (used when
         :meth:`~minijson.MiniJSONEncoder.should_double_be_used` is not overrided)
     """
     cdef:
         object _default
         public bint use_double
+        public bint use_strict_order
 
     def __init__(self, default: tp.Optional[None] = None,
-                 bint use_double = False):
+                 bint use_double = False,
+                 bint use_strict_order = False):
         self._default = default
         self.use_double = use_double
+        self.use_strict_order = use_strict_order
 
     def should_double_be_used(self, y) -> bool:
         """
@@ -385,6 +390,7 @@ cdef class MiniJSONEncoder:
             str field_name
             unsigned int length
             bytes b_data
+            list items
         if data is None:
             cio.write(b'\x08')
             return 1
@@ -508,7 +514,10 @@ cdef class MiniJSONEncoder:
                     cio.write(b'\x12')
                     cio.write(STRUCT_L.pack(length))
                     length = 5
-                for field_name, elem in data.items():
+                items = list(data.items())
+                if self.use_strict_order:
+                    items.sort()
+                for field_name, elem in items:
                     cio.write(bytearray([len(field_name)]))
                     cio.write(field_name.encode('utf-8'))
                     length += self.dump(elem, cio)
@@ -529,7 +538,10 @@ cdef class MiniJSONEncoder:
                     cio.write(STRUCT_L.pack(length))
                     offset = 5
 
-                for key, value in data.items():
+                items = list(data.items())
+                if self.use_strict_order:
+                    items.sort()
+                for key, value in items:
                     offset += self.dump(key, cio)
                     offset += self.dump(value, cio)
                 return offset

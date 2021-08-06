@@ -6,6 +6,11 @@ from minijson import dumps, loads, dumps_object, loads_object, EncodingError, De
 
 class TestMiniJSON(unittest.TestCase):
 
+    def test_encoder_strict_output(self):
+        enc = MiniJSONEncoder(use_strict_order=True)
+        enc.encode({"test": "2", "value": 2})
+        enc.encode({b"test": "2", b"value": 2})
+
     def test_encoder_overrided_default(self):
         class Encoder(MiniJSONEncoder):
             def default(self, v):

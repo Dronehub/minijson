@@ -78,3 +78,12 @@ There's also a class available for encoding. Use it like you would a normal Pyth
 
 .. autoclass:: minijson.MiniJSONEncoder
     :members:
+
+.. warning:: The exact binary content output by :class:`~minijson.MiniJSONEncoder` will
+    depend on internal Python hash order. To have same dicts return the same representation, you
+    must use the parameter :code:`use_strict_order` in :class:`~minijson.MiniJSONEncoder`.
+
+:class:`~minijson.MiniJSONEncoder` will then extract the items from the dictionary,
+and sort them before dumping them to binary output.
+
+Only then strict order will be guaranteed. Your keys must be comparable anyway.
