@@ -28,3 +28,5 @@ Alternatively, you can
 and I'll do my best to compile a wheel for you.
 
 In order to do that you must have `Cython` installed.
+
+Run the Dockerfile to launch unit tests locally.

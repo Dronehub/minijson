@@ -1,6 +1,11 @@
 Changelog
 =========
 
+v2.9
+----
+
+* minor refactor: code deduplication
+
 v2.8
 ----
 

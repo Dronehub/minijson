@@ -1,7 +1,7 @@
 FROM python:3.8
 RUN apt-get update && \
     apt-get install -y patchelf
-RUN python -m pip install Cython pytest coverage pytest-cov auditwheel doctor-wheel twine
+RUN python -m pip install Cython pytest coverage pytest-cov
 
 WORKDIR /tmp/compile
 ADD . /tmp/compile/

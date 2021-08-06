@@ -341,7 +341,7 @@ cdef class MiniJSONEncoder:
         self.use_double = use_double
         self.use_strict_order = use_strict_order
 
-    def should_double_be_used(self, y) -> bool:
+    def should_double_be_used(self, y: float) -> bool:
         """
         A function that you are meant to overload that will decide on a per-case basis
         which representation should be used for given number.
@@ -514,18 +514,17 @@ cdef class MiniJSONEncoder:
                     cio.write(b'\x12')
                     cio.write(STRUCT_L.pack(length))
                     length = 5
+
+                data = data.items()
+
                 if self.use_strict_order:
-                    items = list(data.items())
-                    items.sort()
-                    for field_name, elem in items:
-                        cio.write(bytearray([len(field_name)]))
-                        cio.write(field_name.encode('utf-8'))
-                        length += self.dump(elem, cio)
-                else:
-                    for field_name, elem in data.items():
-                        cio.write(bytearray([len(field_name)]))
-                        cio.write(field_name.encode('utf-8'))
-                        length += self.dump(elem, cio)
+                    data = list(data)
+                    data.sort()  # sort implicitly will sort it by first value, which is the key
+
+                for field_name, elem in data:
+                    cio.write(bytearray([len(field_name)]))
+                    cio.write(field_name.encode('utf-8'))
+                    length += self.dump(elem, cio)
                 return length
             else:
                 if length <= 0xF:
@@ -542,16 +541,13 @@ cdef class MiniJSONEncoder:
                     cio.write(b'\x13')
                     cio.write(STRUCT_L.pack(length))
                     offset = 5
+                data = data.items()
                 if self.use_strict_order:
-                    items = list(data.items())
-                    items.sort()
-                    for key, value in items:
-                        offset += self.dump(key, cio)
-                        offset += self.dump(value, cio)
-                else:
-                    for key, value in data.items():
-                        offset += self.dump(key, cio)
-                        offset += self.dump(value, cio)
+                    data = list(data)
+                    data.sort()  # sort implicitly will sort it by first value, which is the key
+                for key, value in data:
+                    offset += self.dump(key, cio)
+                    offset += self.dump(value, cio)
                 return offset
         else:
             v = self.default(data)

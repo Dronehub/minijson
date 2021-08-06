@@ -131,7 +131,7 @@ jobs:
       before_script:
         - sudo apt-get update
         - sudo apt-get install -y patchelf
-        - pypy3 -m pip install wheel auditwheel twine doctor-wheel cython
+        - pypy3 -m pip install -U wheel auditwheel twine doctor-wheel cython
       script:
         - pypy3 setup.py bdist_wheel
         - cd dist
