@@ -404,7 +404,7 @@ cdef class MiniJSONEncoder:
                 cio.write(data)
         elif isinstance(data, str):
             length = len(data)
-            if length < 128:
+            if length <= 0x7F:
                 cio.write(bytearray([0x80 | length]))
                 cio.write(data.encode('utf-8'))
                 return 1+length
@@ -423,14 +423,14 @@ cdef class MiniJSONEncoder:
                 cio.write(data.encode('utf-8'))
                 return 5+length
         elif isinstance(data, int):
-            if -128 <= data <= 127: # signed char, type 3
+            if -0x80 <= data <= 0x7F: # signed char, type 3
                 cio.write(b'\x03')
                 cio.write(STRUCT_b.pack(data))
                 return 2
             elif 0 <= data <= 255:  # unsigned char, type 6
                 cio.write(bytearray([6, data]))
                 return 2
-            elif -32768 <= data <= 32767:   # signed short, type 2
+            elif -0x8000 <= data <= 0x7FFF:   # signed short, type 2
                 cio.write(b'\x02')
                 cio.write(STRUCT_h.pack(data))
                 return 3
@@ -442,7 +442,7 @@ cdef class MiniJSONEncoder:
                 cio.write(b'\x0C')
                 cio.write(STRUCT_L.pack(data)[1:])
                 return 4
-            elif -2147483648 <= data <= 2147483647:     # signed int, type 1
+            elif -0x80000000 <= data <= 0x7FFFFFFF:     # signed int, type 1
                 cio.write(b'\x01')
                 cio.write(STRUCT_l.pack(data))
                 return 5
@@ -471,13 +471,13 @@ cdef class MiniJSONEncoder:
                 return 5
         elif isinstance(data, (tuple, list)):
             length = len(data)
-            if length < 16:
+            if length <= 0xF:
                 cio.write(bytearray([0b01000000 | length]))
                 length = 1
-            elif length < 256:
+            elif length <= 0xFF:
                 cio.write(bytearray([7, length]))
                 length = 2
-            elif length < 65536:
+            elif length <= 0xFFFF:
                 cio.write(b'\x0F')
                 cio.write(STRUCT_H.pack(length))
                 length = 3
@@ -491,13 +491,13 @@ cdef class MiniJSONEncoder:
         elif isinstance(data, dict):
             length = len(data)
             if can_be_encoded_as_a_dict(data):
-                if length < 16:
+                if length <= 0xF:
                     cio.write(bytearray([0b01010000 | length]))
                     length = 1
-                elif length < 256:
+                elif length <= 0xFF:
                     cio.write(bytearray([11, len(data)]))
                     length = 2
-                elif length < 65536:
+                elif length <= 0xFFFF:
                     cio.write(b'\x11')
                     cio.write(STRUCT_H.pack(length))
                     length = 3

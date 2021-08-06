@@ -1,6 +1,11 @@
 Changelog
 =========
 
+Next version
+------------
+
+* _TBA_
+
 v2.9
 ----
 
