@@ -89,7 +89,7 @@ jobs:
         - python setup.py bdist_wheel
         - cd dist
         - doctor-wheel *.whl
-        - auditwheel repair --plat manylinux2014_arm64 *.whl
+        - auditwheel repair --plat manylinux2014_aarch64 *.whl
         - cd wheelhouse
         - twine upload -u $PYPI_USER -p $PYPI_PWD *.whl
       after_script:
