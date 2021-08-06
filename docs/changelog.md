@@ -1,6 +1,12 @@
 Changelog
 =========
 
+v2.8
+----
+
+* serializing a dict without :code:`use_strict_order` won't construct a list of it's items,
+    allowing you to serialize large dictionaries
+
 v2.7
 ----
 

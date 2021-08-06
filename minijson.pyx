@@ -514,13 +514,18 @@ cdef class MiniJSONEncoder:
                     cio.write(b'\x12')
                     cio.write(STRUCT_L.pack(length))
                     length = 5
-                items = list(data.items())
                 if self.use_strict_order:
+                    items = list(data.items())
                     items.sort()
-                for field_name, elem in items:
-                    cio.write(bytearray([len(field_name)]))
-                    cio.write(field_name.encode('utf-8'))
-                    length += self.dump(elem, cio)
+                    for field_name, elem in items:
+                        cio.write(bytearray([len(field_name)]))
+                        cio.write(field_name.encode('utf-8'))
+                        length += self.dump(elem, cio)
+                else:
+                    for field_name, elem in data.items():
+                        cio.write(bytearray([len(field_name)]))
+                        cio.write(field_name.encode('utf-8'))
+                        length += self.dump(elem, cio)
                 return length
             else:
                 if length <= 0xF:
@@ -537,13 +542,16 @@ cdef class MiniJSONEncoder:
                     cio.write(b'\x13')
                     cio.write(STRUCT_L.pack(length))
                     offset = 5
-
-                items = list(data.items())
                 if self.use_strict_order:
+                    items = list(data.items())
                     items.sort()
-                for key, value in items:
-                    offset += self.dump(key, cio)
-                    offset += self.dump(value, cio)
+                    for key, value in items:
+                        offset += self.dump(key, cio)
+                        offset += self.dump(value, cio)
+                else:
+                    for key, value in data.items():
+                        offset += self.dump(key, cio)
+                        offset += self.dump(value, cio)
                 return offset
         else:
             v = self.default(data)
