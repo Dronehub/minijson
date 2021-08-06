@@ -12,6 +12,7 @@ Welcome to MiniJSON's documentation!
 
    usage
    specification
+   changelog
 
 MiniJSON is a space-aware binary format for representing arbitary JSON.
 It's however most efficient when dealing with short (less than 16 elements) lists and objects,
