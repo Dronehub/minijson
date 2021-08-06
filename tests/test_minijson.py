@@ -1,3 +1,4 @@
+import typing as tp
 import unittest
 
 from minijson import dumps, loads, dumps_object, loads_object, EncodingError, DecodingError, \
@@ -10,13 +11,6 @@ class TestMiniJSON(unittest.TestCase):
         enc = MiniJSONEncoder(use_strict_order=True)
         enc.encode({"test": "2", "value": 2})
         enc.encode({b"test": "2", b"value": 2})
-
-    def test_are_we_sane(self):
-        self.assertTrue(-128 <= -1 <= 127)
-
-    def test_arm_bug(self):
-        b = dumps(-1)
-        self.assertEqual(b, b'\x03\xFF')
 
     def test_encoder_overrided_default(self):
         class Encoder(MiniJSONEncoder):
@@ -66,8 +60,12 @@ class TestMiniJSON(unittest.TestCase):
     def assertLoadingIsDecodingError(self, b: bytes):
         self.assertRaises(DecodingError, lambda: loads(b))
 
-    def assertSameAfterDumpsAndLoads(self, c):
-        self.assertEqual(loads(dumps(c)), c)
+    def assertSameAfterDumpsAndLoads(self, c, repres: tp.Optional[bytes] = None):
+        b = dumps(c)
+        if repres is not None:
+            self.assertEqual(b, repres)
+        d = loads(b)
+        self.assertEqual(c, d)
 
     def test_default_returns_nonjsonable(self):
         """Assert that if transform returns a non-JSONable value, EncodingError is raised"""
@@ -178,10 +176,10 @@ class TestMiniJSON(unittest.TestCase):
         self.assertSameAfterDumpsAndLoads({'a' * 300: 2})
 
     def test_negatives(self):
-        self.assertSameAfterDumpsAndLoads(-1)
-        self.assertSameAfterDumpsAndLoads(-259)
-        self.assertSameAfterDumpsAndLoads(-0x7FFF)
-        self.assertSameAfterDumpsAndLoads(-0xFFFF)
+        self.assertSameAfterDumpsAndLoads(-1, b'\x03\xFF')
+        self.assertSameAfterDumpsAndLoads(-259, b'\x02\xfe\xfd')
+        self.assertSameAfterDumpsAndLoads(-0x7FFF, b'\x02\x80\x01')
+        self.assertSameAfterDumpsAndLoads(-0xFFFF, b'\x01\xff\xff\x00\x01')
         self.assertSameAfterDumpsAndLoads(0x1FFFF)
         self.assertSameAfterDumpsAndLoads(0xFFFFFFFF)
         self.assertSameAfterDumpsAndLoads(0x1FFFFFF)

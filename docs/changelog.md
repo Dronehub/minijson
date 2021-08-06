@@ -5,7 +5,7 @@ v2.9
 ----
 
 * minor refactor: code deduplication
-* fixed some bugs on ARM
+* fixed some bugs with unserializing ints on other platforms than x86_64
 
 v2.8
 ----
