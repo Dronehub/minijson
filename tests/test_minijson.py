@@ -197,6 +197,7 @@ class TestMiniJSON(unittest.TestCase):
         self.assertLoadingIsDecodingError(b'\x00\x01')
         self.assertLoadingIsDecodingError(b'\x00\x01\xFF')
         self.assertLoadingIsDecodingError(b'\x81\xFF')
+        self.assertLoadingIsDecodingError(b'\x0B\x03\x04name\x84land')
 
     def test_loads(self):
         a = loads(
