@@ -84,6 +84,8 @@ There's also a class available for encoding. Use it like you would a normal Pyth
     must use the parameter :code:`use_strict_order` in :class:`~minijson.MiniJSONEncoder`.
 
 :class:`~minijson.MiniJSONEncoder` will then extract the items from the dictionary,
-and sort them before dumping them to binary output.
+and sort them before dumping them to binary output. By enabling this feature you guarantee
+that identical dicts, serialized by identical Pythons will have the exact same binary representation.
+
 
 Only then strict order will be guaranteed. Your keys must be comparable anyway.
