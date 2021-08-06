@@ -11,6 +11,13 @@ class TestMiniJSON(unittest.TestCase):
         enc.encode({"test": "2", "value": 2})
         enc.encode({b"test": "2", b"value": 2})
 
+    def test_are_we_sane(self):
+        self.assertTrue(-128 <= -1 <= 127)
+
+    def test_arm_bug(self):
+        b = dumps(-1)
+        self.assertEqual(b, b'\x03\xFF')
+
     def test_encoder_overrided_default(self):
         class Encoder(MiniJSONEncoder):
             def default(self, v):

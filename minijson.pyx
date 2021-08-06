@@ -176,27 +176,18 @@ cdef tuple parse_bytes(bytes data, int starting_position):
                 return offset+1, b_field_name.decode('utf-8')
             except UnicodeDecodeError as e:
                 raise DecodingError('Invalid UTF-8') from e
-        elif value_type in (1, 4):
-            uint32 = (data[starting_position+1] << 24) | (data[starting_position+2] << 16) | (data[starting_position+3] << 8) | data[starting_position+4]
-            if value_type == 4:
-                return 5, uint32
-            else:
-                sint32 = uint32
-                return 5, sint32
-        elif value_type in (2, 5):
-            uint16 = (data[starting_position+1] << 8) | data[starting_position+2]
-            if value_type == 5:
-                return 3, uint16
-            else:
-                sint16 = uint16
-                return 3, sint16
-        elif value_type in (3, 6):
-            uint8 = data[starting_position+1]
-            if value_type == 6:
-                return 2, uint8
-            else:
-                sint8 = uint8
-                return 2, sint8
+        elif value_type == 1:
+            return 5, *STRUCT_l.unpack(data[starting_position+1:starting_position+5])
+        elif value_type == 4:
+            return 5, *STRUCT_L.unpack(data[starting_position+1:starting_position+5])
+        elif value_type == 2:
+            return 3, *STRUCT_h.unpack(data[starting_position+1:starting_position+3])
+        elif value_type == 5:
+            return 3, *STRUCT_H.unpack(data[starting_position+1:starting_position+3])
+        elif value_type == 3:
+            return 2, *STRUCT_b.unpack(data[starting_position+1:starting_position+2])
+        elif value_type == 6:
+            return 2, data[starting_position+1]
         elif value_type == 7:
             elements = data[starting_position+1]
             offset, e_list = parse_list(data, elements, starting_position+2)

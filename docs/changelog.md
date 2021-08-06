@@ -5,6 +5,7 @@ v2.9
 ----
 
 * minor refactor: code deduplication
+* fixed some bugs on ARM
 
 v2.8
 ----
