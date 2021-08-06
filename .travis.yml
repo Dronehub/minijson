@@ -29,6 +29,12 @@ jobs:
     - stage: test
       python: "3.8"
       arch: "arm64"
+      before_script:
+        - pip install -r requirements.txt
+        - pip install pytest coverage pytest-cov
+      after_script:
+        - coverage xml
+        - coverage report
       script:
         - DEBUG=1 python setup.py install
         - pytest --cov=./ --cov-report=xml
