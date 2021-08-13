@@ -1,6 +1,13 @@
 Changelog
 =========
 
+v2.11
+-----
+
+* fixed a bug with serializing large integers
+* invalid UTF-8 field name will now display name of the field as repr
+* major bugfix: UTF-8 characters that took more than 1 bytes were serialized wrong
+
 v2.10
 -----
 

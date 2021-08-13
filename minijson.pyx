@@ -89,7 +89,7 @@ cdef inline tuple parse_dict(bytes data, int elem_count, int starting_position):
         try:
             s_field_name = b_field_name.decode('utf-8')
         except UnicodeDecodeError as e:
-            raise DecodingError('Invalid UTF-8 field name!') from e
+            raise DecodingError('Invalid UTF-8 field name "%s"!' % (repr(b_field_name), )) from e
         offset += ofs
         ofs, elem = parse_bytes(data, starting_position+offset)
         offset += ofs
@@ -406,24 +406,25 @@ cdef class MiniJSONEncoder:
                 cio.write(b'\x1B' + struct.pack('>L', length))
                 cio.write(data)
         elif isinstance(data, str):
-            length = len(data)
+            b_data = data.encode('utf-8')
+            length = len(b_data)
             if length <= 0x7F:
                 cio.write(bytearray([0x80 | length]))
-                cio.write(data.encode('utf-8'))
+                cio.write(b_data)
                 return 1+length
             elif length <= 0xFF:
                 cio.write(bytearray([0, length]))
-                cio.write(data.encode('utf-8'))
+                cio.write(b_data)
                 return 2+length
             elif length <= 0xFFFF:
                 cio.write(b'\x0D')
                 cio.write(STRUCT_H.pack(length))
-                cio.write(data.encode('utf-8'))
+                cio.write(b_data)
                 return 3+length
             else:       # Python strings cannot grow past 0xFFFFFFFF characters
                 cio.write(b'\x0E')
                 cio.write(STRUCT_L.pack(length))
-                cio.write(data.encode('utf-8'))
+                cio.write(b_data)
                 return 5+length
         elif isinstance(data, int):
             if -0x80 <= data <= 0x7F: # signed char, type 3
@@ -461,7 +462,7 @@ cdef class MiniJSONEncoder:
                         break
                     except OverflowError:
                         length += 1
-                cio.write(bytearray([0x18, length]))
+                cio.write(bytearray([0x18, len(b_data)]))
                 cio.write(b_data)
         elif isinstance(data, float):
             if self.should_double_be_used(data):

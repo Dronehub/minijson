@@ -18,7 +18,7 @@ class TestMiniJSON(unittest.TestCase):
                 return v.real, v.imag
 
         e = Encoder()
-        e.encode(2+3j)
+        e.encode(2 + 3j)
 
     def test_bytes(self):
         a = {b'test': b'dupa'}
@@ -27,18 +27,18 @@ class TestMiniJSON(unittest.TestCase):
         self.assertEqual(loads(b), a)
 
     def test_bytes_26(self):
-        a = b'x'*256
+        a = b'x' * 256
         e = MiniJSONEncoder()
         b = e.encode(a)
         self.assertEqual(loads(b), a)
-        self.assertEqual(len(b), 256+3)
+        self.assertEqual(len(b), 256 + 3)
 
     def test_bytes_27(self):
         e = MiniJSONEncoder()
-        a = b'x'*65537
+        a = b'x' * 65537
         b = e.encode(a)
         self.assertEqual(loads(b), a)
-        self.assertEqual(len(b), 65537+5)
+        self.assertEqual(len(b), 65537 + 5)
 
     def test_encoder_given_default(self):
         def encode(v):
@@ -49,7 +49,7 @@ class TestMiniJSON(unittest.TestCase):
 
     def test_encoder_no_default(self):
         e = MiniJSONEncoder()
-        self.assertRaises(EncodingError, lambda: e.encode(2+3j))
+        self.assertRaises(EncodingError, lambda: e.encode(2 + 3j))
 
     def test_accepts_bytearrays(self):
         b = {'test': 'hello'}
@@ -69,13 +69,15 @@ class TestMiniJSON(unittest.TestCase):
 
     def test_default_returns_nonjsonable(self):
         """Assert that if transform returns a non-JSONable value, EncodingError is raised"""
+
         def transform(c):
             return c
 
-        self.assertRaises(EncodingError, lambda: dumps(2+3j, transform))
+        self.assertRaises(EncodingError, lambda: dumps(2 + 3j, transform))
 
     def test_default(self):
         """Assert the default argument works"""
+
         def transform(c):
             return c.real, c.imag
 
@@ -84,6 +86,7 @@ class TestMiniJSON(unittest.TestCase):
 
     def test_subclasses_of_dicts(self):
         """Assert that you can correctly serialize subclasses of dict"""
+
         class Subclass(dict):
             pass
 
@@ -103,6 +106,7 @@ class TestMiniJSON(unittest.TestCase):
 
     def test_subclasses_of_lists(self):
         """Assert that you can correctly serialize subclasses of list"""
+
         class Subclass(list):
             pass
 
@@ -112,6 +116,7 @@ class TestMiniJSON(unittest.TestCase):
 
     def test_subclasses_of_tuples(self):
         """Assert that you can correctly serialize subclasses of tuple"""
+
         class Subclass(tuple):
             pass
 
@@ -145,7 +150,6 @@ class TestMiniJSON(unittest.TestCase):
         self.assertEqual(loads(b), 4.5)
         switch_default_float()
 
-
     def test_minijson_encoder_returns_a_bool_and_a_bytes(self):
         class Encoder(MiniJSONEncoder):
             def default(self, v):
@@ -155,8 +159,22 @@ class TestMiniJSON(unittest.TestCase):
                     return b'test'
 
         e = Encoder()
-        e.encode(3+4j)
+        e.encode(3 + 4j)
         e.encode(object())
+
+    def test_smok_bug(self):
+        a = [{'service': 'gui', 'when': 1628873412444398,
+              'message': "DEBUG:gui.run:Loaded {'aspect_ratio': {'width': 16, 'height': 9}, 'menu': [{'label': 'GBówna', 'id': 'main'}], 'visualizations': [{'label': 'GBówna', 'id': 'main', 'elements': [{'type': 'text', 'zindex': 15, 'text': 'Stan wejsciowy alarmu', 'top': 10, 'left': 10, 'size': 5}, {'type': 'input', 'zindex': 15, 'widget_type': {'type': 'input'}, 'fqts': 'prog wej1', 'readonly': False, 'top': 10, 'left': 20, 'input_size': 5}, {'type': 'text', 'zindex': 15, 'text': 'Stan wyjsciowy alarmu', 'top': 20, 'left': 10, 'size': 5}, {'type': 'input', 'zindex': 15, 'widget_type': {'type': 'input'}, 'fqts': 'prog wyj1', 'readonly': True, 'top': 20, 'left': 20, 'input_size': 5}]}]} as visualizations",
+              'level': 10}]
+        self.assertSameAfterDumpsAndLoads(a)
+        a = [{'service': 'gui', 'when': 1628873412444398,
+              'message': "DEBUG:gui.run:Loaded {'aspect_ratio': {'width': 16, 'height': 9}, 'menu': [{'label': 'GBówna', 'id': 'main'}], 'visualizations': [{'label': 'GBówna', 'id': 'main', 'elements': [{'type': 'text', 'zindex': 15, 'text': 'Stan wejsciowy alarmu', 'top': 10, 'left': 10, 'size': 5}, {'type': 'input', 'zindex': 15, 'widget_type': {'type': 'input'}, 'fqts': 'prog wej1', 'readonly': False, 'top': 10, 'left': 20, 'input_size': 5}, {'type': 'text', 'zindex': 15, 'text': 'Stan wyjsciowy alarmu', 'top': 20, 'left': 10, 'size': 5}, {'type': 'input', 'zindex': 15, 'widget_type': {'type': 'input'}, 'fqts': 'prog wyj1', 'readonly': True, 'top': 20, 'left': 20, 'input_size': 5}]}]} as visualizations",
+              'level': 10}, {'service': 'gui', 'when': 1628873412444961,
+                             'message': 'DEBUG:rapid.channels:Reconnecting leds current amount of users is 0 due_to_failures=False',
+                             'level': 10}, {'service': 'gui', 'when': 1628873412446439,
+                                            'message': 'DEBUG:rapid.channels:Successfully reconnected leds',
+                                            'level': 10}]
+        self.assertSameAfterDumpsAndLoads(a)
 
     def test_booleans(self):
         self.assertSameAfterDumpsAndLoads({'test': True,
@@ -200,6 +218,7 @@ class TestMiniJSON(unittest.TestCase):
         self.assertSameAfterDumpsAndLoads(0xFFFFFFFFFFFFF)
         self.assertSameAfterDumpsAndLoads(0xFFFFFFFFFFFFFFFFFFFFFFFFFFF)
         self.assertSameAfterDumpsAndLoads(-0xFFFFFFFFFFFFFFFFFFFFFFFFFFFF)
+
     def test_dumps(self):
         self.assertSameAfterDumpsAndLoads({"name": "land", "operator_id": "dupa", "parameters":
             {"lat": 45.22999954223633, "lon": 54.79999923706055, "alt": 234}})
