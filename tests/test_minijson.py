@@ -145,6 +145,19 @@ class TestMiniJSON(unittest.TestCase):
         self.assertEqual(loads(b), 4.5)
         switch_default_float()
 
+
+    def test_minijson_encoder_returns_a_bool_and_a_bytes(self):
+        class Encoder(MiniJSONEncoder):
+            def default(self, v):
+                if isinstance(v, complex):
+                    return True
+                else:
+                    return b'test'
+
+        e = Encoder()
+        e.encode(3+4j)
+        e.encode(object())
+
     def test_booleans(self):
         self.assertSameAfterDumpsAndLoads({'test': True,
                                            'test2': False})

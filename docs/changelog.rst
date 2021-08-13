@@ -1,10 +1,11 @@
 Changelog
 =========
 
-Next version
-------------
+v2.10
+-----
 
-* _TBA_
+* fixed a bug in which if :meth:`minijson.MiniJSONEncoder.default`
+  returned a bytes object or a boolean, it would be classified as an invalid value.
 
 v2.9
 ----

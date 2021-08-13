@@ -301,8 +301,8 @@ cpdef object loads(object data):
     return parse(data, 0)[1]
 
 
-cdef inline bint is_jsonable(y):
-    return y is None or isinstance(y, (int, float, str, dict, list, tuple))
+cdef inline bint is_minijsonable(y):
+    return y is None or isinstance(y, (int, float, str, dict, list, tuple, bool, bytes))
 
 
 cdef class MiniJSONEncoder:
@@ -344,13 +344,16 @@ cdef class MiniJSONEncoder:
 
     def default(self, v):
         """
-        Convert an object to a JSON-able representation.
+        Convert an object to a MiniJSON-able representation.
+
+        A MiniJSONable representation is a dict, tuple, list, float, int, None,
+        a bool or a bytes.
 
         Overload this to provide your default function in other way that giving
         the callable as a parameter.
 
         :param v: object to convert
-        :return: a JSONable representation
+        :return: a Mini-JSONable representation
         """
         if self._default is None:
             raise EncodingError('Unknown value type %s' % (v, ))
@@ -542,8 +545,8 @@ cdef class MiniJSONEncoder:
                 return offset
         else:
             v = self.default(data)
-            if not is_jsonable(v):
-                raise EncodingError('default returned a non-JSONable value!')
+            if not is_minijsonable(v):
+                raise EncodingError('default returned a non-MiniJSONable value!')
             return self.dump(v, cio)
 
 
