@@ -137,6 +137,9 @@ class TestMiniJSON(unittest.TestCase):
         self.assertSameAfterDumpsAndLoads({i: i for i in range(300)})
         self.assertSameAfterDumpsAndLoads({i: i for i in range(66000)})
 
+    def test_smok_bug_case_2(self):
+        self.assertSameAfterDumpsAndLoads({"zażółć gęślą jaźń": "zażółć gęślą jaźń"})
+
     def test_invalid_name_dict(self):
         self.assertLoadingIsDecodingError(b'\x15\x01\x81\x01')
         self.assertLoadingIsDecodingError(b'\x0B\x01\x01\xFF\x15')

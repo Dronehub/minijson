@@ -517,8 +517,9 @@ cdef class MiniJSONEncoder:
                     data.sort()  # sort implicitly will sort it by first value, which is the key
 
                 for field_name, elem in data:
-                    cio.write(bytearray([len(field_name)]))
-                    cio.write(field_name.encode('utf-8'))
+                    b_data = field_name.encode('utf-8')
+                    cio.write(bytearray([len(b_data)]))
+                    cio.write(b_data)
                     length += self.dump(elem, cio)
                 return length
             else:
