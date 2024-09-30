@@ -1,6 +1,16 @@
 Changelog
 =========
 
+v3.0.1
+------
+
+Just PyPI readme notes
+
+v3.0
+----
+
+* switched to GitHub Actions for CI/CD
+
 v2.11
 -----
 

@@ -1,7 +1,10 @@
 import os
 
-from Cython.Build import cythonize
-from Cython.Compiler.Options import get_directive_defaults
+try:
+    from Cython.Build import cythonize
+    from Cython.Compiler.Options import get_directive_defaults
+except ImportError:
+    print('Install Cython in order to build from source')
 from setuptools import setup, Extension
 
 directive_defaults = get_directive_defaults()
@@ -14,5 +17,5 @@ if 'DEBUG' in os.environ:
     directive_defaults['binding'] = True
     macros = [('CYTHON_TRACE', '1')]
 
-setup(ext_modules=cythonize([Extension("minijson", ["minijson.pyx"],
-                                       define_macros=macros)]))
+
+setup(ext_modules=cythonize([Extension("minijson", ["minijson.pyx"], define_macros=macros)]))

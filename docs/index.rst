@@ -1,8 +1,3 @@
-.. MiniJSON documentation master file, created by
-   sphinx-quickstart on Wed May 26 13:28:36 2021.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Welcome to MiniJSON's documentation!
 ====================================
 
@@ -26,6 +21,10 @@ You should avoid objects with keys different than strings, since they will alway
 4-byte length field. This is to be improved in a future release. Key not being strings
 is anyway invalid JSON_.
 
+.. warning::
+
+   Note that the valid mimetype for this is :code:`application/x-minijson`,
+   although you can use the :code:`application/minijson` in a pinch.
 
 .. _JSON: https://www.w3schools.com/js/js_json_objects.asp
 

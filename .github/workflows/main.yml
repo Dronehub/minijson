@@ -1,0 +1,41 @@
+name: CI
+run-name: ${{ github.actor }}
+on: [ push ]
+jobs:
+  tests:
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10", "3.11", "3.12" ]
+    steps:
+      - uses: actions/checkout@main
+      - uses: actions/setup-python@main
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - name: Install everything
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-setuptools python3-yaml python3-dev
+          pip install -U pip pytest coverage pytest-cov Cython setuptools
+      - name: Before the coverage
+        run: |
+          wget https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
+          chmod ugo+x test-reporter-latest-linux-amd64
+          ./test-reporter-latest-linux-amd64 before-build
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+      - name: Test
+        run: |
+          python setup.py install
+          pytest -vv --cov=minijson
+        env:
+          DEBUG: '1'
+      - name: Submit the code coverage
+        run: |
+          coverage xml
+          ./test-reporter-latest-linux-amd64 after-build -t coverage.py
+          ./test-reporter-latest-linux-amd64 format-coverage -t coverage.py -o codeclimate.json
+          ./test-reporter-latest-linux-amd64 upload-coverage -i codeclimate.json
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
